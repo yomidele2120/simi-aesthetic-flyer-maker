@@ -5,219 +5,216 @@ import tattoo2Image from "@/assets/tattoo-2.jpg";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-elegant relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-accent/30 clip-diagonal" />
-      <div className="absolute bottom-20 right-10 w-32 h-32 opacity-20">
-        <svg viewBox="0 0 100 100" className="text-rose-gold">
-          <path d="M50 10 Q60 30 80 40 Q60 50 50 90 Q40 50 20 40 Q40 30 50 10" fill="currentColor" opacity="0.3"/>
-        </svg>
-      </div>
-      
-      {/* Main Flyer Container */}
-      <div className="relative z-10 max-w-lg mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gradient-pink-soft p-3 md:p-6">
+      {/* Main Flyer Container with Decorative Border */}
+      <div className="max-w-lg mx-auto bg-gradient-pink-shine decorative-border-double corner-decoration rounded-sm shadow-2xl overflow-hidden">
         
-        {/* Header with Brand Name */}
-        <header className="text-center mb-6">
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground">
-            Simi <span className="text-rose-gold italic">Aesthetic</span>
-          </h1>
-          <p className="font-elegant text-base italic text-muted-foreground mt-3 leading-relaxed">
-            Welcome to Simi Aesthetic, where beauty meets art!<br/>
-            Treat yourself to a luxurious experience with our beauty services.
-          </p>
-        </header>
-
-        {/* Floating Images - Top Right */}
-        <div className="absolute top-20 right-4 md:right-8 z-20">
-          <div className="relative">
-            <img 
-              src={lashesImage} 
-              alt="Lash extensions"
-              className="w-24 h-24 md:w-28 md:h-28 object-cover rounded-full border-3 border-rose-gold shadow-elegant"
-            />
-          </div>
-        </div>
-
-        {/* Services Content */}
-        <main className="space-y-6 mt-4">
+        {/* Inner Content */}
+        <div className="p-6 md:p-8 relative">
           
-          {/* Lash Extension Section */}
-          <section>
-            <div className="inline-block bg-secondary/80 px-4 py-1 rounded mb-3">
-              <h2 className="font-body text-sm font-semibold uppercase tracking-wider text-foreground">
+          {/* Floating sparkle decorations */}
+          <div className="absolute top-4 right-16 text-primary text-lg sparkle">✦</div>
+          <div className="absolute top-20 left-4 text-primary text-sm sparkle" style={{ animationDelay: '0.5s' }}>✦</div>
+          <div className="absolute bottom-40 right-6 text-primary text-base sparkle" style={{ animationDelay: '1.5s' }}>✦</div>
+
+          {/* Header */}
+          <header className="text-center mb-6 relative">
+            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-wide">
+              <span className="shimmer-gold">Simi</span>{" "}
+              <span className="text-pink-deep italic">Aesthetic</span>
+            </h1>
+            <div className="mt-3 flex justify-center">
+              <div className="ornament-line w-32" />
+            </div>
+            <p className="font-elegant text-lg md:text-xl italic text-muted-foreground mt-4 leading-relaxed px-4">
+              Welcome to Simi Aesthetic, where beauty meets art!<br/>
+              <span className="text-pink-deep font-medium">Treat yourself to a luxurious experience.</span>
+            </p>
+          </header>
+
+          {/* Lash Image - Top Right */}
+          <div className="absolute top-6 right-6 z-20">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary rounded-full blur-xl opacity-30 scale-110" />
+              <img 
+                src={lashesImage} 
+                alt="Lash extensions"
+                className="relative w-20 h-20 md:w-24 md:h-24 object-cover rounded-full border-3 border-pink-deep glow-pink-soft"
+              />
+            </div>
+          </div>
+
+          {/* Services Content */}
+          <main className="space-y-5 mt-2">
+            
+            {/* Lash Extension Section */}
+            <section>
+              <div className="section-label mb-3">
                 Lash Extension
-              </h2>
-            </div>
-            <div className="space-y-1.5 font-body text-sm pl-1">
-              <div className="flex justify-between">
-                <span>Classic Set</span>
-                <span className="text-rose-gold font-medium">₦13,000</span>
               </div>
-              <div className="flex justify-between">
-                <span>Hybrid</span>
-                <span className="text-rose-gold font-medium">₦17,000</span>
+              <div className="space-y-2 font-body text-sm md:text-base pl-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Classic Set</span>
+                  <span className="text-pink-deep font-bold">₦13,000</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Hybrid</span>
+                  <span className="text-pink-deep font-bold">₦17,000</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Volume</span>
+                  <span className="text-pink-deep font-bold">₦22,000</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Mega Volume</span>
+                  <span className="text-pink-deep font-bold">₦25,000</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>Volume</span>
-                <span className="text-rose-gold font-medium">₦22,000</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Mega Volume</span>
-                <span className="text-rose-gold font-medium">₦25,000</span>
-              </div>
-            </div>
-            
-            {/* Extras */}
-            <div className="mt-4">
-              <div className="inline-block bg-rose-gold/20 px-3 py-0.5 rounded mb-2">
-                <h3 className="font-body text-xs font-medium uppercase tracking-wider text-foreground">
+              
+              {/* Extras */}
+              <div className="mt-4">
+                <div className="section-label section-label-light mb-2">
                   Extras
-                </h3>
+                </div>
+                <div className="space-y-1.5 font-body text-sm pl-1">
+                  <div className="flex justify-between">
+                    <span className="text-foreground">Wispy Effect</span>
+                    <span className="text-pink-deep font-semibold">₦5,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-foreground">Under Eyes</span>
+                    <span className="text-pink-deep font-semibold">₦5,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-foreground">Lash Removal</span>
+                    <span className="text-pink-deep font-semibold">₦5,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-foreground">Refilling</span>
+                    <span className="text-pink-deep font-semibold text-xs">50% of initial set</span>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-1 font-body text-sm pl-1">
-                <div className="flex justify-between">
-                  <span>Wispy Effect</span>
-                  <span className="text-rose-gold font-medium">₦5,000</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Under Eyes</span>
-                  <span className="text-rose-gold font-medium">₦5,000</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Lash Removal</span>
-                  <span className="text-rose-gold font-medium">₦5,000</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Refilling</span>
-                  <span className="text-rose-gold font-medium text-xs">50% of initial set</span>
-                </div>
-              </div>
+            </section>
+
+            {/* Decorative Divider with Brow Image */}
+            <div className="flex items-center gap-4 py-2">
+              <div className="ornament-line flex-1" />
+              <img 
+                src={browsImage} 
+                alt="Brow artistry"
+                className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full border-3 border-pink-deep glow-pink-soft"
+              />
+              <div className="ornament-line flex-1" />
             </div>
-          </section>
 
-          {/* Middle Image Row */}
-          <div className="flex justify-end gap-3 py-2">
-            <img 
-              src={browsImage} 
-              alt="Brow artistry"
-              className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg border-2 border-rose-gold shadow-soft"
-            />
-          </div>
-
-          {/* Brows Section */}
-          <section>
-            <div className="inline-block bg-secondary/80 px-4 py-1 rounded mb-3">
-              <h2 className="font-body text-sm font-semibold uppercase tracking-wider text-foreground">
+            {/* Brows Section */}
+            <section>
+              <div className="section-label mb-3">
                 Brows
-              </h2>
-            </div>
-            <div className="space-y-1.5 font-body text-sm pl-1">
-              <div className="flex justify-between">
-                <span>Micro Blading</span>
-                <span className="text-rose-gold font-medium">₦50,000</span>
               </div>
-              <div className="flex justify-between">
-                <span>Ombré Brows</span>
-                <span className="text-rose-gold font-medium">₦40,000</span>
+              <div className="space-y-2 font-body text-sm md:text-base pl-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Micro Blading</span>
+                  <span className="text-pink-deep font-bold">₦50,000</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Ombré Brows</span>
+                  <span className="text-pink-deep font-bold">₦40,000</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Combination Brows</span>
+                  <span className="text-pink-deep font-bold">₦50,000</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-foreground font-medium">Micro Shading</span>
+                  <span className="text-pink-deep font-bold">₦60,000</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>Combination Brows</span>
-                <span className="text-rose-gold font-medium">₦50,000</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Micro Shading</span>
-                <span className="text-rose-gold font-medium">₦60,000</span>
-              </div>
-            </div>
-            
-            {/* Brow Extras */}
-            <div className="mt-3">
-              <div className="inline-block bg-rose-gold/20 px-3 py-0.5 rounded mb-2">
-                <h3 className="font-body text-xs font-medium uppercase tracking-wider text-foreground">
+              
+              {/* Brow Extras */}
+              <div className="mt-3">
+                <div className="section-label section-label-light mb-2">
                   Extra
-                </h3>
-              </div>
-              <div className="space-y-1 font-body text-sm pl-1">
-                <div className="flex justify-between">
-                  <span>Brow Lamination</span>
-                  <span className="text-rose-gold font-medium">₦14,000</span>
+                </div>
+                <div className="font-body text-sm pl-1">
+                  <div className="flex justify-between">
+                    <span className="text-foreground">Brow Lamination</span>
+                    <span className="text-pink-deep font-semibold">₦14,000</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* Semi Permanent Tattoo Section */}
-          <section>
-            <div className="inline-block bg-secondary/80 px-4 py-1 rounded mb-3">
-              <h2 className="font-body text-sm font-semibold uppercase tracking-wider text-foreground">
+            {/* Fancy Divider */}
+            <div className="ornament-line-fancy my-4" />
+
+            {/* Semi Permanent Tattoo Section */}
+            <section>
+              <div className="section-label mb-3">
                 Semi-Permanent Tattoo
-              </h2>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex-1 space-y-1.5 font-body text-sm pl-1">
-                <div className="flex justify-between">
-                  <span>Small Design</span>
-                  <span className="text-rose-gold font-medium">₦20,000</span>
+              </div>
+              <div className="flex gap-4 items-start">
+                <div className="flex-1 space-y-2 font-body text-sm md:text-base pl-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-foreground font-medium">Small Design</span>
+                    <span className="text-pink-deep font-bold">₦20,000</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-foreground font-medium">Big Design</span>
+                    <span className="text-pink-deep font-bold">₦30,000</span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>Big Design</span>
-                  <span className="text-rose-gold font-medium">₦30,000</span>
+                {/* Tattoo Images */}
+                <div className="flex gap-2">
+                  <img 
+                    src={tattoo1Image} 
+                    alt="Blessed tattoo"
+                    className="w-14 h-14 md:w-16 md:h-16 object-cover rounded-lg border-2 border-pink-deep glow-pink-soft"
+                  />
+                  <img 
+                    src={tattoo2Image} 
+                    alt="Butterfly tattoo"
+                    className="w-14 h-14 md:w-16 md:h-16 object-cover rounded-lg border-2 border-pink-deep glow-pink-soft"
+                  />
                 </div>
               </div>
-              {/* Tattoo Images */}
-              <div className="flex gap-2">
-                <img 
-                  src={tattoo1Image} 
-                  alt="Blessed tattoo"
-                  className="w-16 h-16 object-cover rounded-lg border-2 border-rose-gold shadow-soft"
-                />
-                <img 
-                  src={tattoo2Image} 
-                  alt="Butterfly tattoo"
-                  className="w-16 h-16 object-cover rounded-lg border-2 border-rose-gold shadow-soft"
-                />
-              </div>
+            </section>
+          </main>
+
+          {/* Decorative Divider */}
+          <div className="ornament-line my-6" />
+
+          {/* Contact Footer */}
+          <footer className="text-center space-y-3 bg-pink-light/50 -mx-6 md:-mx-8 px-6 py-5 mt-6 border-t-2 border-pink-medium">
+            <h3 className="font-display text-lg font-bold text-pink-deep">
+              ✨ For Enquiries Contact Us ✨
+            </h3>
+            
+            <div className="font-body text-sm md:text-base space-y-1.5 text-foreground font-medium">
+              <p>📍 15 Ekoro Road, Abule Egba, Lagos</p>
+              <p>📞 Phone: 09152581489</p>
+              <p>💬 WhatsApp: 09152581489</p>
             </div>
-          </section>
-        </main>
 
-        {/* Decorative Divider */}
-        <div className="ornament-line my-6" />
+            <div className="pt-2 space-y-1 font-body text-sm text-muted-foreground">
+              <p>📸 Instagram: @Simi_aesthetic_123</p>
+              <p>🎵 TikTok: @Simi_aesthetic_</p>
+            </div>
 
-        {/* Contact Footer */}
-        <footer className="text-center space-y-3">
-          <h3 className="font-display text-lg font-semibold text-foreground">
-            For Enquiries Contact Us:
-          </h3>
-          
-          <div className="font-body text-sm space-y-1 text-foreground">
-            <p>15 Ekoro Road, Abule Egba, Lagos</p>
-            <p>📞 Phone: 09152581489</p>
-            <p>💬 WhatsApp: 09152581489</p>
+            <p className="font-elegant text-xl italic text-pink-deep pt-3 font-semibold">
+              ❀ Where Beauty Meets Artistry ❀
+            </p>
+          </footer>
+
+          {/* Bottom decorative flowers */}
+          <div className="flex justify-center gap-1 mt-4 text-primary opacity-60">
+            <span className="text-lg">❀</span>
+            <span className="text-sm mt-1">✦</span>
+            <span className="text-xl">❀</span>
+            <span className="text-sm mt-1">✦</span>
+            <span className="text-lg">❀</span>
           </div>
-
-          <div className="pt-2 space-y-1 font-body text-sm text-muted-foreground">
-            <p>📸 Instagram: @Simi_aesthetic_123</p>
-            <p>🎵 TikTok: @Simi_aesthetic_</p>
-          </div>
-
-          <p className="font-elegant text-base italic text-rose-gold pt-3">
-            ✨ Where Beauty Meets Artistry ✨
-          </p>
-        </footer>
-
-        {/* Decorative floral element */}
-        <div className="flex justify-center mt-4 opacity-40">
-          <svg width="80" height="40" viewBox="0 0 80 40" className="text-rose-gold">
-            <path d="M10 35 Q20 20 40 20 Q60 20 70 35" stroke="currentColor" fill="none" strokeWidth="1"/>
-            <circle cx="25" cy="28" r="3" fill="currentColor"/>
-            <circle cx="40" cy="25" r="4" fill="currentColor"/>
-            <circle cx="55" cy="28" r="3" fill="currentColor"/>
-            <path d="M20 32 L25 28 M25 28 L30 32" stroke="currentColor" strokeWidth="0.5"/>
-            <path d="M35 30 L40 25 M40 25 L45 30" stroke="currentColor" strokeWidth="0.5"/>
-            <path d="M50 32 L55 28 M55 28 L60 32" stroke="currentColor" strokeWidth="0.5"/>
-          </svg>
         </div>
       </div>
     </div>
