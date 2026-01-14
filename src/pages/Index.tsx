@@ -70,7 +70,7 @@ const Index = () => {
               <div className="flex justify-between"><span>Wispy effect</span><span>₦5,000</span></div>
               <div className="flex justify-between"><span>Under eyes</span><span>₦5,000</span></div>
               <div className="flex justify-between"><span>Lash removal</span><span>₦5,000</span></div>
-              <div className="flex justify-between"><span>Refilling</span><span>50% of set price</span></div>
+              <div className="flex justify-between"><span>Refilling</span><span>50% off</span></div>
             </div>
           </div>
         </section>
