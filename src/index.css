@@ -208,10 +208,18 @@
   .service-price {
     @apply font-display text-base md:text-lg text-rose-gold font-medium;
   }
+
+  .clip-diagonal {
+    clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .border-3 {
+    border-width: 3px;
   }
 }
