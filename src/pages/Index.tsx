@@ -20,8 +20,13 @@ const TikTokIcon = ({ size = 16, className = "" }: { size?: number; className?: 
 const Index = () => {
   return (
     <div className="min-h-screen bg-pink-100 font-body flex items-center justify-center py-6 px-4">
-      {/* A4-ish container: slightly bigger than 210x297mm */}
-      <div className="w-full max-w-[240mm] bg-pink-50 shadow-2xl">
+      {/* A4-ish container with decorative border */}
+      <div className="w-full max-w-[240mm] bg-pink-50 shadow-2xl border-[6px] border-pink-400 outline outline-2 outline-pink-200 outline-offset-4 relative">
+        {/* Corner decorations */}
+        <div className="absolute -top-2 -left-2 w-6 h-6 border-t-4 border-l-4 border-pink-600 rounded-tl-sm"></div>
+        <div className="absolute -top-2 -right-2 w-6 h-6 border-t-4 border-r-4 border-pink-600 rounded-tr-sm"></div>
+        <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-4 border-l-4 border-pink-600 rounded-bl-sm"></div>
+        <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-4 border-r-4 border-pink-600 rounded-br-sm"></div>
         {/* Header Section with Image */}
         <section className="relative">
           <div className="flex">
@@ -143,14 +148,14 @@ const Index = () => {
         </section>
 
         {/* Contact Footer */}
-        <footer className="bg-pink-400 text-white py-5 px-6">
-          <div className="text-center space-y-1.5 text-sm">
-            <p className="font-medium">📍 15 Ekoro Road, Abule Egba</p>
+        <footer className="bg-pink-200 text-pink-900 py-5 px-6">
+          <div className="text-center space-y-1.5 text-sm font-medium">
+            <p>📍 15 Ekoro Road, Abule Egba</p>
             <p>📞 09152581489</p>
             <p>💬 WhatsApp: 09152581489</p>
           </div>
           
-          <div className="flex justify-center gap-5 mt-3 text-white/90 text-sm">
+          <div className="flex justify-center gap-5 mt-3 text-pink-800 text-sm">
             <span className="flex items-center gap-1">
               <Instagram size={16} />
               Simi_aesthetic_123
@@ -162,14 +167,14 @@ const Index = () => {
           </div>
           
           <div className="flex justify-center gap-3 mt-3">
-            <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-sm">f</span>
-            <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-sm">✕</span>
-            <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+            <span className="w-7 h-7 rounded-full bg-pink-400 text-white flex items-center justify-center text-sm">f</span>
+            <span className="w-7 h-7 rounded-full bg-pink-400 text-white flex items-center justify-center text-sm">✕</span>
+            <span className="w-7 h-7 rounded-full bg-pink-400 text-white flex items-center justify-center">
               <Instagram size={14} />
             </span>
           </div>
           
-          <p className="text-center text-xs mt-3 text-white/70 uppercase tracking-wide">Follow Us</p>
+          <p className="text-center text-xs mt-3 text-pink-700 uppercase tracking-wide font-semibold">Follow Us</p>
         </footer>
       </div>
     </div>
