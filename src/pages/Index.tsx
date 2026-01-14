@@ -32,11 +32,11 @@ const Index = () => {
           <div className="flex">
             {/* Left Content */}
             <div className="w-2/3 px-6 py-8">
-              <h1 className="font-display text-3xl md:text-4xl font-bold text-pink-900 leading-tight">
-                Simi<br />
-                <span className="italic text-pink-600">Aesthetic</span>
+              <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight">
+                <span className="shimmer-gold">Simi</span><br />
+                <span className="italic text-pink-600 glow-text">Aesthetic</span>
               </h1>
-              <p className="text-pink-700 mt-2 text-sm">Beauty & Confidence</p>
+              <p className="text-pink-900 mt-2 text-sm font-semibold tracking-wide uppercase">Beauty & Confidence</p>
             </div>
             
             {/* Right Pink Block with Image */}
@@ -70,7 +70,7 @@ const Index = () => {
               <div className="flex justify-between"><span>Wispy effect</span><span>₦5,000</span></div>
               <div className="flex justify-between"><span>Under eyes</span><span>₦5,000</span></div>
               <div className="flex justify-between"><span>Lash removal</span><span>₦5,000</span></div>
-              <div className="flex justify-between"><span>Refilling</span><span>50% off</span></div>
+              <div className="flex justify-between"><span>Refilling</span><span>50% off lash set price</span></div>
             </div>
           </div>
         </section>
