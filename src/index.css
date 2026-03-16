@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,50 +6,41 @@
 
 @layer base {
   :root {
-    /* Deep Pink & Light Pink Aesthetic */
-    --background: 340 30% 97%;
-    --foreground: 340 50% 15%;
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
 
-    --card: 340 40% 98%;
-    --card-foreground: 340 50% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 340 40% 98%;
-    --popover-foreground: 340 50% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Deep Pink Primary */
-    --primary: 340 80% 55%;
+    --primary: 0 72% 51%;
     --primary-foreground: 0 0% 100%;
 
-    /* Light Pink Secondary */
-    --secondary: 340 50% 92%;
-    --secondary-foreground: 340 60% 25%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    /* Soft Pink Muted */
-    --muted: 340 30% 94%;
-    --muted-foreground: 340 30% 40%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    /* Pink Accent */
-    --accent: 340 60% 88%;
-    --accent-foreground: 340 60% 25%;
+    --accent: 221 83% 53%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 340 40% 85%;
-    --input: 340 40% 85%;
-    --ring: 340 80% 55%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 47% 11%;
 
-    --radius: 0.5rem;
+    --radius: 0.25rem;
 
-    /* Custom Pink Palette */
-    --pink-deep: 340 80% 55%;
-    --pink-vibrant: 340 90% 60%;
-    --pink-medium: 340 70% 70%;
-    --pink-light: 340 60% 90%;
-    --pink-pale: 340 40% 96%;
-    --pink-glow: 340 100% 75%;
-    --gold-shimmer: 45 90% 65%;
-    --white-shine: 0 0% 100%;
+    /* Custom tokens */
+    --news-crimson: 0 72% 51%;
+    --trust-blue: 221 83% 53%;
+    --ink-navy: 222 47% 11%;
+    --slate-wash: 210 40% 96%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -62,25 +53,25 @@
   }
 
   .dark {
-    --background: 340 30% 8%;
-    --foreground: 340 20% 95%;
-    --card: 340 30% 12%;
-    --card-foreground: 340 20% 95%;
-    --popover: 340 30% 12%;
-    --popover-foreground: 340 20% 95%;
-    --primary: 340 75% 60%;
-    --primary-foreground: 340 30% 8%;
-    --secondary: 340 30% 18%;
-    --secondary-foreground: 340 20% 95%;
-    --muted: 340 30% 18%;
-    --muted-foreground: 340 20% 60%;
-    --accent: 340 30% 18%;
-    --accent-foreground: 340 20% 95%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 340 30% 18%;
-    --input: 340 30% 18%;
-    --ring: 340 75% 60%;
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 0 72% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 221 83% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 96%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 213 27% 84%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -98,264 +89,52 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Montserrat', sans-serif;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 
-  h1, h2, h3 {
-    font-family: 'Playfair Display', serif;
+  h1, h2, h3, h4 {
+    font-family: 'Newsreader', serif;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
 }
 
 @layer components {
-  .font-display {
-    font-family: 'Playfair Display', serif;
+  .prose-article {
+    @apply text-lg leading-relaxed;
+    max-width: 65ch;
+    text-wrap: pretty;
   }
 
-  .font-elegant {
-    font-family: 'Cormorant Garamond', serif;
+  .category-tag {
+    @apply text-xs font-bold uppercase tracking-widest text-primary;
   }
 
-  .font-body {
-    font-family: 'Montserrat', sans-serif;
+  .meta-text {
+    @apply text-sm text-muted-foreground tabular-nums;
   }
 
-  /* Pink color utilities */
-  .text-pink-deep {
-    color: hsl(var(--pink-deep));
+  .section-divider {
+    @apply border-t border-border;
   }
 
-  .text-pink-vibrant {
-    color: hsl(var(--pink-vibrant));
+  .ticker-bar {
+    @apply h-10 bg-primary text-primary-foreground flex items-center overflow-hidden;
   }
 
-  .bg-pink-deep {
-    background-color: hsl(var(--pink-deep));
+  .card-editorial {
+    @apply border-b border-border pb-6 cursor-pointer;
   }
 
-  .bg-pink-light {
-    background-color: hsl(var(--pink-light));
+  .headline-hover {
+    @apply transition-colors duration-150 group-hover:text-accent;
   }
 
-  .bg-pink-pale {
-    background-color: hsl(var(--pink-pale));
+  .ghost-button {
+    @apply border border-border bg-transparent px-4 py-2 text-sm font-medium transition-all duration-150 hover:bg-foreground hover:text-background;
   }
 
-  .border-pink-deep {
-    border-color: hsl(var(--pink-deep));
-  }
-
-  .border-pink-medium {
-    border-color: hsl(var(--pink-medium));
-  }
-
-  /* Gradient backgrounds */
-  .bg-gradient-pink {
-    background: linear-gradient(135deg, hsl(340 80% 55%) 0%, hsl(340 90% 70%) 50%, hsl(340 80% 55%) 100%);
-  }
-
-  .bg-gradient-pink-soft {
-    background: linear-gradient(180deg, hsl(340 40% 96%) 0%, hsl(340 60% 92%) 50%, hsl(340 50% 94%) 100%);
-  }
-
-  .bg-gradient-pink-shine {
-    background: linear-gradient(135deg, 
-      hsl(340 60% 92%) 0%, 
-      hsl(340 40% 96%) 25%,
-      hsl(0 0% 100%) 50%,
-      hsl(340 40% 96%) 75%,
-      hsl(340 60% 92%) 100%
-    );
-  }
-
-  /* Shiny/Shimmer effects */
-  .shimmer {
-    background: linear-gradient(
-      110deg,
-      hsl(var(--pink-pale)) 0%,
-      hsl(0 0% 100%) 40%,
-      hsl(0 0% 100% / 0.8) 50%,
-      hsl(0 0% 100%) 60%,
-      hsl(var(--pink-pale)) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
-  }
-
-  .shimmer-gold {
-    background: linear-gradient(
-      110deg,
-      hsl(var(--pink-deep)) 0%,
-      hsl(45 90% 65%) 40%,
-      hsl(45 100% 75%) 50%,
-      hsl(45 90% 65%) 60%,
-      hsl(var(--pink-deep)) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 2.5s ease-in-out infinite;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .glow-text {
-    text-shadow: 
-      0 0 10px hsl(340 80% 55% / 0.5),
-      0 0 20px hsl(340 80% 55% / 0.3),
-      0 0 30px hsl(340 80% 55% / 0.2);
-  }
-
-  .glow-pink {
-    box-shadow: 
-      0 0 20px hsl(340 80% 55% / 0.4),
-      0 0 40px hsl(340 80% 55% / 0.2),
-      0 0 60px hsl(340 80% 55% / 0.1);
-  }
-
-  .glow-pink-soft {
-    box-shadow: 
-      0 4px 20px hsl(340 80% 55% / 0.25),
-      0 2px 10px hsl(340 60% 70% / 0.2);
-  }
-
-  @keyframes shimmer {
-    0% { background-position: 200% center; }
-    100% { background-position: -200% center; }
-  }
-
-  @keyframes sparkle {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
-  }
-
-  .sparkle {
-    animation: sparkle 2s ease-in-out infinite;
-  }
-
-  /* Decorative border */
-  .decorative-border {
-    border: 3px solid transparent;
-    border-image: linear-gradient(135deg, 
-      hsl(340 80% 55%) 0%, 
-      hsl(340 90% 70%) 25%,
-      hsl(340 60% 80%) 50%,
-      hsl(340 90% 70%) 75%,
-      hsl(340 80% 55%) 100%
-    ) 1;
-  }
-
-  .decorative-border-double {
-    position: relative;
-    border: 2px solid hsl(var(--pink-deep));
-  }
-
-  .decorative-border-double::before {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border: 1px solid hsl(var(--pink-medium));
-    pointer-events: none;
-  }
-
-  .decorative-border-double::after {
-    content: '';
-    position: absolute;
-    inset: 8px;
-    border: 1px dashed hsl(var(--pink-light));
-    pointer-events: none;
-  }
-
-  /* Corner decorations */
-  .corner-decoration {
-    position: relative;
-  }
-
-  .corner-decoration::before,
-  .corner-decoration::after {
-    content: '✦';
-    position: absolute;
-    color: hsl(var(--pink-deep));
-    font-size: 1.25rem;
-    animation: sparkle 2s ease-in-out infinite;
-  }
-
-  .corner-decoration::before {
-    top: 12px;
-    left: 12px;
-  }
-
-  .corner-decoration::after {
-    bottom: 12px;
-    right: 12px;
-    animation-delay: 1s;
-  }
-
-  /* Ornament line */
-  .ornament-line {
-    height: 2px;
-    background: linear-gradient(90deg, 
-      transparent 0%, 
-      hsl(var(--pink-medium)) 20%,
-      hsl(var(--pink-deep)) 50%, 
-      hsl(var(--pink-medium)) 80%,
-      transparent 100%
-    );
-  }
-
-  .ornament-line-fancy {
-    position: relative;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, hsl(var(--pink-deep)) 50%, transparent 100%);
-  }
-
-  .ornament-line-fancy::before {
-    content: '❀';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: hsl(var(--pink-pale));
-    padding: 0 8px;
-    color: hsl(var(--pink-deep));
-    font-size: 1rem;
-  }
-
-  /* Section styling */
-  .section-label {
-    display: inline-block;
-    background: linear-gradient(135deg, hsl(var(--pink-deep)) 0%, hsl(340 90% 65%) 100%);
-    color: white;
-    padding: 4px 16px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border-radius: 2px;
-    box-shadow: 0 2px 8px hsl(340 80% 55% / 0.3);
-  }
-
-  .section-label-light {
-    background: hsl(var(--pink-light));
-    color: hsl(var(--pink-deep));
-    border: 1px solid hsl(var(--pink-medium));
-  }
-
-  .clip-diagonal {
-    clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .border-3 {
-    border-width: 3px;
-  }
-
-  .border-4 {
-    border-width: 4px;
+  .nav-link {
+    @apply text-sm font-medium uppercase tracking-wider text-foreground/80 hover:text-foreground transition-colors duration-150;
   }
 }

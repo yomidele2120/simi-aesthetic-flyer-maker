@@ -1,183 +1,143 @@
-import { Instagram } from "lucide-react";
-import lashesImage from "@/assets/lashes-1.jpg";
-import browsImage from "@/assets/brows-1.jpg";
-import tattoo1Image from "@/assets/tattoo-1.jpg";
-import tattoo2Image from "@/assets/tattoo-2.jpg";
-
-// TikTok icon component (not available in lucide-react)
-const TikTokIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="currentColor" 
-    className={className}
-  >
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-  </svg>
-);
+import { useState, useEffect } from "react";
+import Layout from "@/components/layout/Layout";
+import ArticleCard from "@/components/news/ArticleCard";
+import NewsletterSignup from "@/components/news/NewsletterSignup";
+import { supabase } from "@/integrations/supabase/client";
+import { articles as mockArticles, categories } from "@/lib/mockData";
+import { type Article } from "@/lib/mockData";
+import { Link } from "react-router-dom";
 
 const Index = () => {
+  const [dbArticles, setDbArticles] = useState<Article[]>([]);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      const { data } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("status", "published")
+        .order("published_at", { ascending: false })
+        .limit(20);
+
+      if (data && data.length > 0) {
+        const mapped: Article[] = data.map((a) => ({
+          id: a.id,
+          title: a.title,
+          summary: a.summary || "",
+          content: a.content || "",
+          category: a.category,
+          author: a.author || "CoreNews Staff",
+          date: a.published_at ? new Date(a.published_at).toLocaleDateString() : "",
+          imageUrl: a.image_url || "",
+          readTime: a.read_time || "5 min",
+          isBreaking: a.is_breaking || false,
+          isFeatured: a.is_featured || false,
+          isTrending: a.is_trending || false,
+          isOpinion: a.is_opinion || false,
+        }));
+        setDbArticles(mapped);
+      }
+    };
+
+    fetchArticles();
+
+    // Realtime subscription for instant updates
+    const channel = supabase
+      .channel("homepage-articles")
+      .on("postgres_changes", { event: "*", schema: "public", table: "articles" }, () => {
+        fetchArticles();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
+  // Merge: DB articles first, then mock as fallback
+  const allArticles = dbArticles.length > 0 ? [...dbArticles, ...mockArticles] : mockArticles;
+
+  const heroArticle = allArticles.find((a) => a.isFeatured && a.isBreaking) || allArticles[0];
+  const featuredArticles = allArticles.filter((a) => a.isFeatured && a.id !== heroArticle?.id).slice(0, 2);
+  const trendingArticles = allArticles.filter((a) => a.isTrending).slice(0, 5);
+  const latestArticles = allArticles.filter((a) => a.id !== heroArticle?.id).slice(0, 6);
+
   return (
-    <div className="min-h-screen bg-pink-100 font-body flex items-center justify-center py-6 px-4">
-      {/* A4-ish container with decorative border */}
-      <div className="w-full max-w-[240mm] bg-pink-50 shadow-2xl border-[6px] border-pink-400 outline outline-2 outline-pink-200 outline-offset-4 relative">
-        {/* Corner decorations */}
-        <div className="absolute -top-2 -left-2 w-6 h-6 border-t-4 border-l-4 border-pink-600 rounded-tl-sm"></div>
-        <div className="absolute -top-2 -right-2 w-6 h-6 border-t-4 border-r-4 border-pink-600 rounded-tr-sm"></div>
-        <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-4 border-l-4 border-pink-600 rounded-bl-sm"></div>
-        <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-4 border-r-4 border-pink-600 rounded-br-sm"></div>
-        {/* Header Section with Image */}
-        <section className="relative">
-          <div className="flex">
-            {/* Left Content */}
-            <div className="w-2/3 px-6 py-8">
-              <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight">
-                <span className="shimmer-gold">Simi</span><br />
-                <span className="italic text-pink-600 glow-text">Aesthetic</span>
-              </h1>
-              <p className="text-pink-900 mt-2 text-sm font-semibold tracking-wide uppercase">Beauty & Confidence</p>
-            </div>
-            
-            {/* Right Pink Block with Image */}
-            <div className="w-1/3 relative">
-              <div className="absolute inset-0 bg-pink-300"></div>
-              <img 
-                src={lashesImage} 
-                alt="Lash extensions"
-                className="relative w-full h-40 object-cover"
-              />
+    <Layout>
+      <section className="container py-8 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 border-r-0 lg:border-r border-border lg:pr-8">
+            {heroArticle && <ArticleCard article={heroArticle} variant="hero" />}
+          </div>
+          <div className="lg:col-span-4">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6 pb-2 border-b border-border">
+              Trending Now
+            </h2>
+            <div className="space-y-0">
+              {trendingArticles.map((a, i) => (
+                <div key={a.id} className="flex gap-3 items-start card-editorial py-4">
+                  <span className="font-serif text-3xl font-bold text-muted-foreground/30 leading-none">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <Link to={`/article/${a.id}`} className="group flex-1">
+                    <span className="category-tag text-[10px] mb-1 block">{a.category}</span>
+                    <h3 className="text-sm font-serif font-semibold leading-snug headline-hover">
+                      {a.title}
+                    </h3>
+                    <span className="meta-text text-xs mt-1 block">{a.readTime}</span>
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
-          
-          {/* Decorative element */}
-          <div className="absolute left-5 top-28 text-pink-400 text-3xl opacity-60">🌸</div>
-        </section>
+        </div>
+      </section>
 
-        {/* Lash Services Section */}
-        <section className="px-6 py-5">
-          <div className="bg-pink-100/60 rounded-lg p-4">
-            <h2 className="font-display text-lg text-pink-900 font-semibold mb-2">Lash Extension</h2>
-            <div className="space-y-1 text-sm text-pink-800">
-              <div className="flex justify-between"><span>Classic set</span><span className="font-medium">₦13,000</span></div>
-              <div className="flex justify-between"><span>Hybrid</span><span className="font-medium">₦17,000</span></div>
-              <div className="flex justify-between"><span>Volume</span><span className="font-medium">₦22,000</span></div>
-              <div className="flex justify-between"><span>Mega volume</span><span className="font-medium">₦25,000</span></div>
-            </div>
-            
-            <p className="text-xs text-pink-600 mt-2 font-medium uppercase tracking-wide">Extras</p>
-            <div className="space-y-1 text-sm text-pink-700 mt-1">
-              <div className="flex justify-between"><span>Wispy effect</span><span>₦5,000</span></div>
-              <div className="flex justify-between"><span>Under eyes</span><span>₦5,000</span></div>
-              <div className="flex justify-between"><span>Lash removal</span><span>₦5,000</span></div>
-              <div className="flex justify-between"><span>Refilling</span><span>50% off lash set price</span></div>
-            </div>
+      <section className="border-t border-border">
+        <div className="container py-8 md:py-12">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6 pb-2 border-b border-border">
+            Featured Stories
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {featuredArticles.map((a) => (
+              <ArticleCard key={a.id} article={a} />
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Image with Newsletter Style */}
-        <section className="flex">
-          <div className="w-1/2 relative">
-            <img 
-              src={browsImage} 
-              alt="Brow artistry"
-              className="w-full h-44 object-cover"
-            />
+      <section className="border-t border-border">
+        <div className="container py-8 md:py-12">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6 pb-2 border-b border-border">
+            Latest News
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {latestArticles.map((a) => (
+              <ArticleCard key={a.id} article={a} />
+            ))}
           </div>
-          <div className="w-1/2 bg-pink-200 flex flex-col justify-center px-5 py-3">
-            <p className="text-pink-500 text-xs uppercase tracking-widest">Services</p>
-            <h3 className="font-display text-xl text-pink-900 font-bold mt-1">Perfect Brows</h3>
-            <p className="text-pink-700 text-sm mt-2 leading-relaxed">
-              Expertly crafted brows that enhance your natural beauty.
-            </p>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Brows Services Section */}
-        <section className="px-6 py-5">
-          <div className="space-y-1 text-sm text-pink-800">
-            <div className="flex justify-between"><span>Micro blading</span><span className="font-medium">₦50,000</span></div>
-            <div className="flex justify-between"><span>Ombré brows</span><span className="font-medium">₦40,000</span></div>
-            <div className="flex justify-between"><span>Combination brows</span><span className="font-medium">₦50,000</span></div>
-            <div className="flex justify-between"><span>Micro shading</span><span className="font-medium">₦60,000</span></div>
+      <section className="border-t border-border bg-muted/50">
+        <div className="container py-8 md:py-12">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6 pb-2 border-b border-border">
+            Explore Sections
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            {categories.map((cat) => (
+              <Link
+                key={cat.path}
+                to={cat.path}
+                className="border border-border bg-background p-4 text-center hover:border-foreground transition-colors group"
+              >
+                <span className="text-sm font-medium group-hover:text-accent transition-colors">{cat.name}</span>
+              </Link>
+            ))}
           </div>
-          
-          <p className="text-xs text-pink-600 mt-3 font-medium uppercase tracking-wide">Extras</p>
-          <div className="space-y-1 text-sm text-pink-700 mt-1">
-            <div className="flex justify-between"><span>Brows lamination</span><span>₦14,000</span></div>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Semi Permanent Tattoo Title */}
-        <section className="py-4 text-center">
-          <h2 className="font-display text-lg text-pink-900 uppercase tracking-[0.2em]">Semi Permanent Tattoo</h2>
-        </section>
-
-        {/* Gallery Row */}
-        <section className="flex gap-2 px-4">
-          <div className="flex-1">
-            <img 
-              src={tattoo1Image} 
-              alt="Blessed tattoo"
-              className="w-full h-28 object-cover rounded-lg"
-            />
-          </div>
-          <div className="flex-1">
-            <img 
-              src={tattoo2Image} 
-              alt="Butterfly tattoo"
-              className="w-full h-28 object-cover rounded-lg"
-            />
-          </div>
-          <div className="flex-1 bg-pink-300 rounded-lg flex items-center justify-center">
-            <div className="text-center text-pink-900 text-sm p-2">
-              <div className="font-medium">Small design</div>
-              <div>₦20,000</div>
-              <div className="mt-1 font-medium">Big design</div>
-              <div>₦30,000</div>
-            </div>
-          </div>
-        </section>
-
-        {/* Tagline Section */}
-        <section className="text-center py-6 px-6">
-          <h3 className="font-display text-lg text-pink-900 uppercase tracking-widest">Let Yourself Be Beautiful</h3>
-          <p className="text-pink-600 text-sm mt-2 max-w-xs mx-auto leading-relaxed">
-            Experience the art of aesthetic beauty with our professional services.
-          </p>
-        </section>
-
-        {/* Contact Footer */}
-        <footer className="bg-pink-200 text-pink-900 py-5 px-6">
-          <div className="text-center space-y-1.5 text-sm font-medium">
-            <p>📍 15 Ekoro Road, Abule Egba</p>
-            <p>📞 09152581489</p>
-            <p>💬 WhatsApp: 09152581489</p>
-          </div>
-          
-          <div className="flex justify-center gap-5 mt-3 text-pink-800 text-sm">
-            <span className="flex items-center gap-1">
-              <Instagram size={16} />
-              Simi_aesthetic_123
-            </span>
-            <span className="flex items-center gap-1">
-              <TikTokIcon size={16} />
-              Simi_aesthetic_
-            </span>
-          </div>
-          
-          <div className="flex justify-center gap-3 mt-3">
-            <span className="w-7 h-7 rounded-full bg-pink-400 text-white flex items-center justify-center text-sm">f</span>
-            <span className="w-7 h-7 rounded-full bg-pink-400 text-white flex items-center justify-center text-sm">✕</span>
-            <span className="w-7 h-7 rounded-full bg-pink-400 text-white flex items-center justify-center">
-              <Instagram size={14} />
-            </span>
-          </div>
-          
-          <p className="text-center text-xs mt-3 text-pink-700 uppercase tracking-wide font-semibold">Follow Us</p>
-        </footer>
-      </div>
-    </div>
+      <NewsletterSignup />
+    </Layout>
   );
 };
 

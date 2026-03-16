@@ -1,1 +1,10 @@
-project_id = "dswwtngdctamzaaootcn"
+project_id = "iukrokkltwqinixstuwy"
+
+[functions.create-admin]
+verify_jwt = false
+
+[functions.ai-rewrite]
+verify_jwt = false
+
+[functions.news-discovery]
+verify_jwt = false
