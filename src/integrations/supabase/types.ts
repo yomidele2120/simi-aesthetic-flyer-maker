@@ -14,7 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_suggestions: {
+        Row: {
+          ai_content: string | null
+          ai_headlines: Json | null
+          ai_summary: string | null
+          ai_title: string | null
+          category: string | null
+          confidence: number | null
+          created_at: string | null
+          id: string
+          image_url: string | null
+          original_summary: string | null
+          original_title: string
+          source_name: string | null
+          source_url: string | null
+          status: string | null
+        }
+        Insert: {
+          ai_content?: string | null
+          ai_headlines?: Json | null
+          ai_summary?: string | null
+          ai_title?: string | null
+          category?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          original_summary?: string | null
+          original_title: string
+          source_name?: string | null
+          source_url?: string | null
+          status?: string | null
+        }
+        Update: {
+          ai_content?: string | null
+          ai_headlines?: Json | null
+          ai_summary?: string | null
+          ai_title?: string | null
+          category?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          original_summary?: string | null
+          original_title?: string
+          source_name?: string | null
+          source_url?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      articles: {
+        Row: {
+          author: string | null
+          category: string
+          content: string | null
+          created_at: string | null
+          hero_duration_hours: number | null
+          id: string
+          image_url: string | null
+          is_breaking: boolean | null
+          is_featured: boolean | null
+          is_important: boolean | null
+          is_opinion: boolean | null
+          is_trending: boolean | null
+          published_at: string | null
+          read_time: string | null
+          show_in_hero: boolean | null
+          source_name: string | null
+          source_url: string | null
+          status: string | null
+          subcategory: string | null
+          summary: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string | null
+          hero_duration_hours?: number | null
+          id?: string
+          image_url?: string | null
+          is_breaking?: boolean | null
+          is_featured?: boolean | null
+          is_important?: boolean | null
+          is_opinion?: boolean | null
+          is_trending?: boolean | null
+          published_at?: string | null
+          read_time?: string | null
+          show_in_hero?: boolean | null
+          source_name?: string | null
+          source_url?: string | null
+          status?: string | null
+          subcategory?: string | null
+          summary?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string | null
+          hero_duration_hours?: number | null
+          id?: string
+          image_url?: string | null
+          is_breaking?: boolean | null
+          is_featured?: boolean | null
+          is_important?: boolean | null
+          is_opinion?: boolean | null
+          is_trending?: boolean | null
+          published_at?: string | null
+          read_time?: string | null
+          show_in_hero?: boolean | null
+          source_name?: string | null
+          source_url?: string | null
+          status?: string | null
+          subcategory?: string | null
+          summary?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
