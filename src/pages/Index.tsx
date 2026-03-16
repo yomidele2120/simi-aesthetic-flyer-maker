@@ -6,13 +6,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { articles as mockArticles, categories } from "@/lib/mockData";
 import { type Article } from "@/lib/mockData";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Index = () => {
   const [dbArticles, setDbArticles] = useState<Article[]>([]);
+  const [heroIndex, setHeroIndex] = useState(0);
 
   useEffect(() => {
     const fetchArticles = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("articles")
         .select("*")
         .eq("status", "published")
@@ -20,7 +22,7 @@ const Index = () => {
         .limit(20);
 
       if (data && data.length > 0) {
-        const mapped: Article[] = data.map((a) => ({
+        const mapped: Article[] = data.map((a: any) => ({
           id: a.id,
           title: a.title,
           summary: a.summary || "",
@@ -34,6 +36,8 @@ const Index = () => {
           isFeatured: a.is_featured || false,
           isTrending: a.is_trending || false,
           isOpinion: a.is_opinion || false,
+          isImportant: a.is_important || false,
+          showInHero: a.show_in_hero || false,
         }));
         setDbArticles(mapped);
       }
@@ -41,7 +45,6 @@ const Index = () => {
 
     fetchArticles();
 
-    // Realtime subscription for instant updates
     const channel = supabase
       .channel("homepage-articles")
       .on("postgres_changes", { event: "*", schema: "public", table: "articles" }, () => {
@@ -55,17 +58,65 @@ const Index = () => {
   // Merge: DB articles first, then mock as fallback
   const allArticles = dbArticles.length > 0 ? [...dbArticles, ...mockArticles] : mockArticles;
 
-  const heroArticle = allArticles.find((a) => a.isFeatured && a.isBreaking) || allArticles[0];
-  const featuredArticles = allArticles.filter((a) => a.isFeatured && a.id !== heroArticle?.id).slice(0, 2);
+  // Hero slideshow: only important articles marked for hero
+  const heroArticles = allArticles.filter((a: any) => a.showInHero || (a.isImportant && a.isFeatured));
+  const heroSlides = heroArticles.length > 0 ? heroArticles.slice(0, 5) : [allArticles[0]].filter(Boolean);
+
+  // Auto-advance hero slideshow
+  useEffect(() => {
+    if (heroSlides.length <= 1) return;
+    const timer = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
+
+  const currentHero = heroSlides[heroIndex] || allArticles[0];
+
+  const featuredArticles = allArticles.filter((a) => a.isFeatured && a.id !== currentHero?.id).slice(0, 2);
   const trendingArticles = allArticles.filter((a) => a.isTrending).slice(0, 5);
-  const latestArticles = allArticles.filter((a) => a.id !== heroArticle?.id).slice(0, 6);
+  const latestArticles = allArticles.filter((a) => a.id !== currentHero?.id).slice(0, 6);
 
   return (
     <Layout>
+      {/* Hero Slideshow */}
       <section className="container py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 border-r-0 lg:border-r border-border lg:pr-8">
-            {heroArticle && <ArticleCard article={heroArticle} variant="hero" />}
+            {currentHero && (
+              <div className="relative">
+                <ArticleCard article={currentHero} variant="hero" />
+                {heroSlides.length > 1 && (
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex gap-1">
+                      {heroSlides.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setHeroIndex(i)}
+                          className={`h-1.5 rounded-full transition-all ${
+                            i === heroIndex ? "w-6 bg-foreground" : "w-1.5 bg-muted-foreground/30"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setHeroIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
+                        className="p-1 hover:bg-muted rounded transition-colors"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => setHeroIndex((prev) => (prev + 1) % heroSlides.length)}
+                        className="p-1 hover:bg-muted rounded transition-colors"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="lg:col-span-4">
             <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6 pb-2 border-b border-border">

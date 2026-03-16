@@ -13,7 +13,6 @@ const ArticlePage = () => {
 
   useEffect(() => {
     const fetchArticle = async () => {
-      // Try mock data first
       const mock = mockArticles.find((a) => a.id === id);
       if (mock) {
         setArticle(mock);
@@ -21,8 +20,7 @@ const ArticlePage = () => {
         return;
       }
 
-      // Try database
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("articles")
         .select("*")
         .eq("id", id!)
