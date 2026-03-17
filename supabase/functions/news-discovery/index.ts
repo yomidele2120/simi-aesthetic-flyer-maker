@@ -379,8 +379,78 @@ serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    // Step 6a: ChromaDB duplicate detection (if configured)
+    const CHROMA_API_KEY = Deno.env.get("CHROMA_API_KEY");
+    const CHROMA_ENDPOINT = Deno.env.get("CHROMA_ENDPOINT");
+    let chromaFiltered = processed;
+
+    if (CHROMA_API_KEY && CHROMA_ENDPOINT) {
+      const baseUrl = CHROMA_ENDPOINT.replace(/\/$/, "");
+      const chromaHeaders = {
+        "Authorization": `Bearer ${CHROMA_API_KEY}`,
+        "Content-Type": "application/json",
+      };
+
+      try {
+        // Ensure collection exists
+        await fetch(`${baseUrl}/api/v1/collections`, {
+          method: "POST",
+          headers: chromaHeaders,
+          body: JSON.stringify({ name: "news_articles", get_or_create: true }),
+        });
+
+        const colResp = await fetch(`${baseUrl}/api/v1/collections/news_articles`, { headers: chromaHeaders });
+        if (colResp.ok) {
+          const col = await colResp.json();
+          const nonDuplicates: any[] = [];
+
+          for (const item of processed) {
+            try {
+              const qResp = await fetch(`${baseUrl}/api/v1/collections/${col.id}/query`, {
+                method: "POST",
+                headers: chromaHeaders,
+                body: JSON.stringify({ query_texts: [item.ai_title || item.original_title], n_results: 1 }),
+              });
+              if (qResp.ok) {
+                const qData = await qResp.json();
+                const dist = qData.distances?.[0]?.[0];
+                if (dist === undefined || dist > 0.3) {
+                  nonDuplicates.push(item);
+                } else {
+                  console.log(`Duplicate detected (distance ${dist}): ${item.original_title}`);
+                }
+              } else {
+                nonDuplicates.push(item);
+              }
+            } catch {
+              nonDuplicates.push(item);
+            }
+          }
+
+          chromaFiltered = nonDuplicates;
+          console.log(`ChromaDB: ${processed.length - nonDuplicates.length} duplicates filtered`);
+
+          // Add non-duplicates to ChromaDB for future detection
+          if (nonDuplicates.length > 0) {
+            const ids = nonDuplicates.map((_, i) => `discovery-${Date.now()}-${i}`);
+            const docs = nonDuplicates.map((item) => `${item.ai_title || item.original_title}. ${item.ai_summary || item.original_summary || ""}`);
+            const metas = nonDuplicates.map((item) => ({ source: item.source_name || "", category: item.category || "" }));
+
+            await fetch(`${baseUrl}/api/v1/collections/${col.id}/add`, {
+              method: "POST",
+              headers: chromaHeaders,
+              body: JSON.stringify({ ids, documents: docs, metadatas: metas }),
+            });
+          }
+        }
+      } catch (e) {
+        console.error("ChromaDB integration error (non-fatal):", e);
+      }
+    }
+
+    // Step 7: Save to database
     let insertedCount = 0;
-    for (const item of processed) {
+    for (const item of chromaFiltered) {
       const { data: existing } = await supabase
         .from("ai_suggestions")
         .select("id")
