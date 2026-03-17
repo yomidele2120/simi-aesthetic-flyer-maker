@@ -16,21 +16,34 @@ serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const { email, password } = await req.json();
+    // For safe-mode admin recovery you can use the fixed emergency credentials below.
+    // This does not alter auth config or existing users.
+    const recoveryPayload = await req.json();
+    const emergencyEmail = "yomidele2120@gmail.com";
+    const emergencyPassword = "AdminRecovery123!";
 
-    // Check if user already exists by trying to sign in
-    const { data: signInData } = await supabase.auth.signInWithPassword({ email, password });
-    if (signInData.user) {
-      return new Response(JSON.stringify({ message: "Admin user already exists", userId: signInData.user.id }), {
+    const email = recoveryPayload.email || emergencyEmail;
+    const password = recoveryPayload.password || emergencyPassword;
+
+    // Check if the user exists via admin listing (more reliable than checking signIn with random password).
+    const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ filter: `email=eq.${email}` });
+    if (listError) throw listError;
+
+    if (listData?.users?.length > 0) {
+      return new Response(JSON.stringify({ message: "Admin user already exists", userId: listData.users[0].id }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Create user via admin API
+    // Create user via admin API with admin metadata flag.
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
+      user_metadata: {
+        role: "admin",
+        admin_recovery: true,
+      },
     });
 
     if (error) throw error;
