@@ -5,8 +5,8 @@ import BreakingNewsTicker from "../news/BreakingNewsTicker";
 
 const Layout = ({ children }: { children: ReactNode }) => (
   <div className="min-h-screen flex flex-col">
-    <BreakingNewsTicker />
     <Header />
+    <BreakingNewsTicker />
     <main className="flex-1">{children}</main>
     <Footer />
   </div>

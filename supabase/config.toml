@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.news-discovery]
 verify_jwt = false
+
+[functions.api-status]
+verify_jwt = false

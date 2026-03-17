@@ -9,8 +9,18 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    // Use Groq if available, otherwise fall back to Lovable AI
+    const useGroq = !!GROQ_API_KEY;
+    const apiKey = useGroq ? GROQ_API_KEY : LOVABLE_API_KEY;
+    const apiUrl = useGroq
+      ? "https://api.groq.com/openai/v1/chat/completions"
+      : "https://ai.gateway.lovable.dev/v1/chat/completions";
+    const model = useGroq ? "llama-3.3-70b-versatile" : "google/gemini-3-flash-preview";
+
+    if (!apiKey) throw new Error("No AI API key configured (GROQ_API_KEY or LOVABLE_API_KEY)");
 
     const { action, title, summary, content } = await req.json();
 
@@ -34,7 +44,7 @@ serve(async (req) => {
         break;
 
       case "seo":
-        systemPrompt = "You are an SEO specialist for a news website. Generate an SEO-optimized title (under 60 chars) and meta description (under 160 chars) for this article. Return as JSON: {\"seoTitle\": \"...\", \"seoDescription\": \"...\"}";
+        systemPrompt = "You are an SEO specialist for a news website. Generate an SEO-optimized title (under 60 chars) and meta description (under 160 chars) for this article. Also generate 5-8 relevant SEO keywords. Return as JSON: {\"seoTitle\": \"...\", \"seoDescription\": \"...\", \"keywords\": [...]}";
         userPrompt = `Title: ${title}\n\nSummary: ${summary}`;
         break;
 
@@ -42,14 +52,14 @@ serve(async (req) => {
         throw new Error(`Unknown action: ${action}`);
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -71,14 +81,13 @@ serve(async (req) => {
         });
       }
       const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
-      throw new Error(`AI gateway error: ${response.status}`);
+      console.error("AI error:", response.status, text);
+      throw new Error(`AI error: ${response.status}`);
     }
 
     const data = await response.json();
     const result = data.choices?.[0]?.message?.content || "";
 
-    // Parse headlines as JSON array if action is headlines
     let parsed: any = result;
     if (action === "headlines") {
       try {
@@ -96,7 +105,7 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ result: parsed }), {
+    return new Response(JSON.stringify({ result: parsed, provider: useGroq ? "groq" : "lovable" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

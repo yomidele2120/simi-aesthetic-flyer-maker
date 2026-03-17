@@ -5,6 +5,7 @@ export type Article = {
   content: string;
   category: string;
   subcategory?: string;
+  subheadline?: string;
   author: string;
   date: string;
   imageUrl: string;
@@ -151,12 +152,16 @@ export const articles: Article[] = [
 
 export const categories = [
   { name: "Nigeria", path: "/nigeria", subcategories: ["Politics", "Economy", "Security", "Society", "Government Policies"] },
-  { name: "World", path: "/world", subcategories: ["International Politics", "Global Conflicts", "Diplomatic Relations"] },
+  { name: "World", path: "/world", subcategories: ["International Politics", "Global Conflicts", "Diplomatic Relations", "Global Economy"] },
+  { name: "Politics", path: "/politics", subcategories: ["Nigerian Politics", "International Politics", "Policy Analysis"] },
   { name: "Business & Economy", path: "/business", subcategories: ["Nigerian Economy", "Global Markets", "Companies", "Oil & Energy", "Currency"] },
   { name: "Technology", path: "/technology", subcategories: ["AI", "Startups", "Gadgets", "Internet & Social Media"] },
+  { name: "Sports", path: "/sports", subcategories: ["Football", "Basketball", "Athletics", "Tennis"] },
   { name: "Investigations", path: "/investigations", subcategories: [] },
   { name: "Opinions", path: "/opinions", subcategories: [] },
-  { name: "Videos", path: "/videos", subcategories: [] },
+  { name: "Health", path: "/health", subcategories: ["Public Health", "Medical Research", "Lifestyle"] },
+  { name: "Science", path: "/science", subcategories: ["Space", "Environment", "Innovation"] },
+  { name: "Entertainment", path: "/entertainment", subcategories: ["Movies", "Music", "Culture"] },
 ];
 
 export const navigationItems = [
