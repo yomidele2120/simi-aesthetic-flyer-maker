@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Layout from "@/components/layout/Layout";
 import ArticleCard from "@/components/news/ArticleCard";
 import HeroSlideshow from "@/components/news/HeroSlideshow";
@@ -21,7 +21,7 @@ const Index = () => {
 
   const loadMoreObserverRef = useRef<HTMLDivElement | null>(null);
 
-  const allArticles = dbArticles.length > 0 ? [...dbArticles, ...mockArticles] : mockArticles;
+  const allArticles = useMemo(() => dbArticles.length > 0 ? [...dbArticles, ...mockArticles] : mockArticles, [dbArticles]);
   const slideshowArticles = heroArticles.length > 0
     ? heroArticles
     : allArticles.filter((a) => a.isFeatured || a.isBreaking).slice(0, 4);

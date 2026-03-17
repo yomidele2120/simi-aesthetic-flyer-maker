@@ -71,7 +71,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_featured: boolean | null
-          media_type: string | null
+          media_type: string
           media_url: string
           position: number | null
         }
@@ -80,7 +80,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_featured?: boolean | null
-          media_type?: string | null
+          media_type?: string
           media_url: string
           position?: number | null
         }
@@ -89,7 +89,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_featured?: boolean | null
-          media_type?: string | null
+          media_type?: string
           media_url?: string
           position?: number | null
         }
@@ -106,21 +106,21 @@ export type Database = {
       article_views: {
         Row: {
           article_id: string
+          created_at: string | null
           id: string
           session_id: string | null
-          viewed_at: string | null
         }
         Insert: {
           article_id: string
+          created_at?: string | null
           id?: string
           session_id?: string | null
-          viewed_at?: string | null
         }
         Update: {
           article_id?: string
+          created_at?: string | null
           id?: string
           session_id?: string | null
-          viewed_at?: string | null
         }
         Relationships: [
           {
@@ -138,6 +138,7 @@ export type Database = {
           category: string
           content: string | null
           created_at: string | null
+          hero_duration_hours: number | null
           hero_enabled: boolean | null
           hero_expires_at: string | null
           id: string
@@ -145,18 +146,21 @@ export type Database = {
           importance_score: number | null
           is_breaking: boolean | null
           is_featured: boolean | null
+          is_important: boolean | null
           is_opinion: boolean | null
           is_trending: boolean | null
           published_at: string | null
           read_time: string | null
           seo_description: string | null
           seo_title: string | null
+          show_in_hero: boolean | null
           source_name: string | null
           source_url: string | null
           status: string | null
           subcategory: string | null
+          subheadline: string | null
           summary: string | null
-          tags: string[] | null
+          tags: Json | null
           title: string
           updated_at: string | null
         }
@@ -165,6 +169,7 @@ export type Database = {
           category?: string
           content?: string | null
           created_at?: string | null
+          hero_duration_hours?: number | null
           hero_enabled?: boolean | null
           hero_expires_at?: string | null
           id?: string
@@ -172,18 +177,21 @@ export type Database = {
           importance_score?: number | null
           is_breaking?: boolean | null
           is_featured?: boolean | null
+          is_important?: boolean | null
           is_opinion?: boolean | null
           is_trending?: boolean | null
           published_at?: string | null
           read_time?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          show_in_hero?: boolean | null
           source_name?: string | null
           source_url?: string | null
           status?: string | null
           subcategory?: string | null
+          subheadline?: string | null
           summary?: string | null
-          tags?: string[] | null
+          tags?: Json | null
           title: string
           updated_at?: string | null
         }
@@ -192,6 +200,7 @@ export type Database = {
           category?: string
           content?: string | null
           created_at?: string | null
+          hero_duration_hours?: number | null
           hero_enabled?: boolean | null
           hero_expires_at?: string | null
           id?: string
@@ -199,18 +208,21 @@ export type Database = {
           importance_score?: number | null
           is_breaking?: boolean | null
           is_featured?: boolean | null
+          is_important?: boolean | null
           is_opinion?: boolean | null
           is_trending?: boolean | null
           published_at?: string | null
           read_time?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          show_in_hero?: boolean | null
           source_name?: string | null
           source_url?: string | null
           status?: string | null
           subcategory?: string | null
+          subheadline?: string | null
           summary?: string | null
-          tags?: string[] | null
+          tags?: Json | null
           title?: string
           updated_at?: string | null
         }
