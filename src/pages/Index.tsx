@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Layout from "@/components/layout/Layout";
 import ArticleCard from "@/components/news/ArticleCard";
 import HeroSlideshow from "@/components/news/HeroSlideshow";
