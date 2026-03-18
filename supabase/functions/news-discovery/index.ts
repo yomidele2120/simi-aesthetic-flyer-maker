@@ -293,9 +293,6 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
     const result = await processOne(item);
     if (result) processed.push(result);
   }
-    const results = await Promise.all(chunk.map(processOne));
-    processed.push(...results.filter(Boolean));
-  }
   return processed;
 }
 
