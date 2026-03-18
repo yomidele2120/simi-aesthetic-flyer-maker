@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { articles as mockArticles, type Article } from "@/lib/mockData";
 import { Share2, Facebook, Twitter } from "lucide-react";
 import ArticleCard from "@/components/news/ArticleCard";
+import ArticleLikes from "@/components/news/ArticleLikes";
+import ArticleComments from "@/components/news/ArticleComments";
 
 type MediaItem = {
   id: string;
