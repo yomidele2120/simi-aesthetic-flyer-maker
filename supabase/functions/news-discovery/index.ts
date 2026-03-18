@@ -215,10 +215,9 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
     : "https://ai.gateway.lovable.dev/v1/chat/completions";
   const model = useGroq ? "llama-3.3-70b-versatile" : "google/gemini-2.5-flash-lite";
 
-  const processed: any[] = [];
-  const batch = items.slice(0, 15);
+  const batch = items.slice(0, 8);
 
-  for (const item of batch) {
+  async function processOne(item: NewsItem) {
     try {
       const resp = await fetch(apiUrl, {
         method: "POST",
@@ -265,14 +264,14 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
 
       if (!resp.ok) {
         console.error("AI processing failed:", resp.status);
-        continue;
+        return null;
       }
 
       const data = await resp.json();
       const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
       if (toolCall) {
         const args = JSON.parse(toolCall.function.arguments);
-        processed.push({
+        return {
           original_title: item.title,
           original_summary: item.description,
           source_name: item.source,
@@ -280,11 +279,20 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
           image_url: item.imageUrl,
           ...args,
           ai_headlines: args.ai_headlines || [],
-        });
+        };
       }
     } catch (e) {
       console.error("AI processing error:", e);
     }
+    return null;
+  }
+
+  // Process in parallel batches of 4
+  const processed: any[] = [];
+  for (let i = 0; i < batch.length; i += 4) {
+    const chunk = batch.slice(i, i + 4);
+    const results = await Promise.all(chunk.map(processOne));
+    processed.push(...results.filter(Boolean));
   }
   return processed;
 }
