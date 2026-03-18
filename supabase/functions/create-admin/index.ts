@@ -26,11 +26,12 @@ serve(async (req) => {
     const password = recoveryPayload.password || emergencyPassword;
 
     // Check if the user exists via admin listing (more reliable than checking signIn with random password).
-    const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ filter: `email=eq.${email}` });
+    const { data: listData, error: listError } = await supabase.auth.admin.listUsers();
     if (listError) throw listError;
 
-    if (listData?.users?.length > 0) {
-      return new Response(JSON.stringify({ message: "Admin user already exists", userId: listData.users[0].id }), {
+    const existingUser = listData?.users?.find((u: any) => u.email === email);
+    if (existingUser) {
+      return new Response(JSON.stringify({ message: "Admin user already exists", userId: existingUser.id }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
