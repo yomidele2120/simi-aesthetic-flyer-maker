@@ -30,6 +30,7 @@ export type Database = {
           source_name: string | null
           source_url: string | null
           status: string | null
+          tags: Json | null
         }
         Insert: {
           ai_content?: string | null
@@ -46,6 +47,7 @@ export type Database = {
           source_name?: string | null
           source_url?: string | null
           status?: string | null
+          tags?: Json | null
         }
         Update: {
           ai_content?: string | null
@@ -62,6 +64,7 @@ export type Database = {
           source_name?: string | null
           source_url?: string | null
           status?: string | null
+          tags?: Json | null
         }
         Relationships: []
       }

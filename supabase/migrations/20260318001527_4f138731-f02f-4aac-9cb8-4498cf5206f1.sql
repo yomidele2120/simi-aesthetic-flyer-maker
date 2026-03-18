@@ -1,0 +1,1 @@
+ALTER TABLE public.ai_suggestions ADD COLUMN IF NOT EXISTS tags jsonb DEFAULT '[]'::jsonb;
