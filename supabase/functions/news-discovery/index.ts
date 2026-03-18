@@ -287,10 +287,12 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
     return null;
   }
 
-  // Process in parallel batches of 4
+  // Process sequentially to avoid Groq rate limits
   const processed: any[] = [];
-  for (let i = 0; i < batch.length; i += 4) {
-    const chunk = batch.slice(i, i + 4);
+  for (const item of batch) {
+    const result = await processOne(item);
+    if (result) processed.push(result);
+  }
     const results = await Promise.all(chunk.map(processOne));
     processed.push(...results.filter(Boolean));
   }
