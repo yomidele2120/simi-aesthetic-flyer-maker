@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { articles as mockArticles, type Article } from "@/lib/mockData";
 import { Share2, Facebook, Twitter } from "lucide-react";
 import ArticleCard from "@/components/news/ArticleCard";
+import ArticleLikes from "@/components/news/ArticleLikes";
+import ArticleComments from "@/components/news/ArticleComments";
 
 type MediaItem = {
   id: string;
@@ -222,9 +224,14 @@ const ArticlePage = () => {
               ))}
             </div>
 
-            <div className="mt-4 text-xs text-muted-foreground italic">
-              Augmented by CoreNews AI
+            {/* Like button */}
+            <div className="mt-6 flex items-center gap-4">
+              <ArticleLikes articleId={id!} />
+              <span className="text-xs text-muted-foreground">Augmented by CoreNews AI</span>
             </div>
+
+            {/* Comments section */}
+            <ArticleComments articleId={id!} />
           </div>
 
           <aside className="lg:col-span-4 lg:border-l border-border lg:pl-8">

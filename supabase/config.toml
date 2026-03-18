@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.api-status]
 verify_jwt = false
+
+[functions.sitemap]
+verify_jwt = false
+
+[functions.chroma-duplicates]
+verify_jwt = false
