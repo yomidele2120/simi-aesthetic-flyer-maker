@@ -82,7 +82,7 @@ const ArticlePage = () => {
             subheadline: r.subheadline || "",
             content: r.content || "",
             category: r.category,
-            author: r.author || "CoreNews Staff",
+            author: r.author || "Frontier Staff",
             date: r.published_at ? new Date(r.published_at).toLocaleDateString() : "",
             imageUrl: r.image_url || "",
             readTime: r.read_time || "5 min",
