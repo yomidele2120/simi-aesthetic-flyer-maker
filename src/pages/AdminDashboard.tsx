@@ -735,6 +735,17 @@ const AdminDashboard = () => {
             </span>
           </button>
           <button
+            onClick={initManualCreate}
+            className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "create" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <PenLine className="h-4 w-4" />
+              Create Story
+            </span>
+          </button>
+          <button
             onClick={() => setActiveTab("published")}
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === "published" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
