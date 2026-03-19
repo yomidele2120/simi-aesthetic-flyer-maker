@@ -56,14 +56,14 @@ type MediaItem = {
   isFeatured: boolean;
 };
 
-const CATEGORIES = ["Nigeria", "World", "Business & Economy", "Technology", "Investigations", "Opinions", "Sports", "Politics"];
+const CATEGORIES = ["Nigeria", "World", "Business & Economy", "Technology", "Investigations", "Opinions", "Sports", "Politics", "Science", "Health", "Entertainment"];
 
 const AdminDashboard = () => {
   const { signOut } = useAuth();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [publishedArticles, setPublishedArticles] = useState<PublishedArticle[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"pulse" | "published" | "api-status">("pulse");
+  const [activeTab, setActiveTab] = useState<"pulse" | "published" | "create" | "api-status">("pulse");
   const [isDiscovering, setIsDiscovering] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
   const [isGeneratingHeadlines, setIsGeneratingHeadlines] = useState(false);
