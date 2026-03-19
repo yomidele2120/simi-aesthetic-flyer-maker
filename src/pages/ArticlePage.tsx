@@ -129,7 +129,7 @@ const ArticlePage = () => {
     );
   }
 
-  const bodyContent = article.content || article.summary + "\n\nThis is a developing story. CoreNews will provide updates as more information becomes available.";
+  const bodyContent = article.content || article.summary + "\n\nThis is a developing story. Frontier will provide updates as more information becomes available.";
 
   // Get non-featured media for gallery
   const galleryMedia = media.filter((m) => !m.is_featured);
