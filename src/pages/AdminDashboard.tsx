@@ -621,13 +621,90 @@ const AdminDashboard = () => {
     </div>
   );
 
+  // Manual story creation
+  const [isPublishingManual, setIsPublishingManual] = useState(false);
+
+  const initManualCreate = () => {
+    setActiveTab("create");
+    setSelectedSuggestion(null);
+    setEditingPublishedId(null);
+    setEditHeadline("");
+    setEditCategory("Nigeria");
+    setEditContent("");
+    setEditSummary("");
+    setEditTags("");
+    setEditIsBreaking(false);
+    setEditIsFeatured(false);
+    setEditHeroEnabled(false);
+    setEditImportance(50);
+    setMediaItems([]);
+  };
+
+  const publishManualStory = async (asDraft = false) => {
+    if (!editHeadline.trim()) {
+      toast({ title: "Title required", variant: "destructive" });
+      return;
+    }
+    if (!asDraft && mediaItems.length === 0) {
+      toast({ title: "Media Required", description: "Please add at least one image before publishing.", variant: "destructive" });
+      return;
+    }
+
+    setIsPublishingManual(true);
+    try {
+      const featuredMedia = mediaItems.find((m) => m.isFeatured) || mediaItems[0];
+      const heroExpiresAt = editHeroEnabled
+        ? new Date(Date.now() + parseInt(editHeroDuration) * 3600 * 1000).toISOString()
+        : null;
+
+      const { data: inserted, error: insertError } = await supabase.from("articles").insert({
+        title: editHeadline,
+        summary: editSummary,
+        content: editContent,
+        category: editCategory,
+        image_url: featuredMedia?.url || null,
+        status: asDraft ? "draft" : "published",
+        published_at: asDraft ? null : new Date().toISOString(),
+        is_breaking: editIsBreaking,
+        is_featured: editIsFeatured,
+        is_trending: false,
+        hero_enabled: editHeroEnabled,
+        hero_expires_at: heroExpiresAt,
+        tags: editTags ? editTags.split(",").map((t) => t.trim()) : [],
+        importance_score: editImportance,
+        author: "Frontier Staff",
+      }).select("id").single();
+
+      if (insertError) throw insertError;
+
+      if (inserted && mediaItems.length > 1) {
+        const mediaRecords = mediaItems.map((m, i) => ({
+          article_id: inserted.id,
+          media_url: m.url,
+          media_type: m.type,
+          is_featured: m.isFeatured,
+          position: i,
+        }));
+        await supabase.from("article_media").insert(mediaRecords);
+      }
+
+      toast({ title: asDraft ? "Saved as Draft" : "Story Published!", description: asDraft ? "Article saved." : "Article is now live." });
+      initManualCreate();
+      await fetchPublished();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setIsPublishingManual(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-background border-b border-border">
         <div className="container flex items-center justify-between py-4">
           <div className="flex items-center gap-4">
-            <Link to="/" className="font-serif text-xl font-bold">
-              Core<span className="text-primary">News</span>
+            <Link to="/" className="font-serif text-xl font-bold uppercase tracking-tight">
+              Frontier
             </Link>
             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-border pl-4">
               Admin Dashboard
