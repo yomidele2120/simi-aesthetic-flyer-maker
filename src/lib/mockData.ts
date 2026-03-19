@@ -79,10 +79,10 @@ export const articles: Article[] = [
   {
     id: "5",
     title: "Investigation: How ₦45 Billion in Public Funds Disappeared from State Infrastructure Projects",
-    summary: "A six-month CoreNews investigation reveals systematic irregularities in the allocation and disbursement of state infrastructure funds across three Nigerian states.",
+    summary: "A six-month Frontier investigation reveals systematic irregularities in the allocation and disbursement of state infrastructure funds across three Nigerian states.",
     content: "",
     category: "Investigations",
-    author: "CoreNews Investigative Desk",
+    author: "Frontier Investigative Desk",
     date: "2026-03-13",
     imageUrl: "",
     readTime: "15 min",

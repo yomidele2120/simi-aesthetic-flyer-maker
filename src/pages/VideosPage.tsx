@@ -25,7 +25,7 @@ const VideosPage = () => {
             summary: a.summary || "",
             content: a.content || "",
             category: a.category,
-            author: a.author || "CoreNews Staff",
+            author: a.author || "Frontier Staff",
             date: a.published_at ? new Date(a.published_at).toLocaleDateString() : "",
             imageUrl: a.image_url || "",
             readTime: a.read_time || "5 min",
@@ -47,7 +47,7 @@ const VideosPage = () => {
     <Layout>
       <section className="container py-8 md:py-12">
         <h1 className="font-serif text-4xl font-bold mb-4">Video News</h1>
-        <p className="text-muted-foreground mb-8">Explore the latest video journalism from CoreNews, featuring breaking reports, interviews and investigations.</p>
+        <p className="text-muted-foreground mb-8">Explore the latest video journalism from Frontier, featuring breaking reports, interviews and investigations.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((article) => (
