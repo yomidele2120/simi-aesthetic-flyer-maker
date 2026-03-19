@@ -49,7 +49,7 @@ const ArticlePage = () => {
             content: data.content || "",
             category: data.category,
             subcategory: data.subcategory || undefined,
-            author: data.author || "CoreNews Staff",
+            author: data.author || "Frontier Staff",
             date: data.published_at ? new Date(data.published_at).toLocaleDateString() : "",
             imageUrl: data.image_url || "",
             readTime: data.read_time || "5 min",
