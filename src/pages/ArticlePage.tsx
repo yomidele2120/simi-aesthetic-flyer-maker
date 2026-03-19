@@ -227,7 +227,7 @@ const ArticlePage = () => {
             {/* Like button */}
             <div className="mt-6 flex items-center gap-4">
               <ArticleLikes articleId={id!} />
-              <span className="text-xs text-muted-foreground">Augmented by CoreNews AI</span>
+              <span className="text-xs text-muted-foreground">Augmented by Frontier AI</span>
             </div>
 
             {/* Comments section */}
