@@ -1,9 +1,9 @@
 const NewsletterSignup = () => (
   <section className="bg-foreground text-background py-12 md:py-16">
     <div className="container text-center max-w-2xl">
-      <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">Join the Investigation</h2>
+      <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">Stay Informed</h2>
       <p className="text-background/60 mb-6">
-        Get CoreNews' most important stories delivered to your inbox every morning. No spam, just journalism.
+        Get Frontier's most important stories delivered to your inbox every morning. No spam, just journalism.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
         <input

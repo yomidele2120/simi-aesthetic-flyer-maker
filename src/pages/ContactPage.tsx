@@ -54,7 +54,7 @@ const ContactPage = () => {
                 </select>
               </div>
               <p className="text-xs text-muted-foreground">
-                Your identity will be protected. CoreNews follows strict source protection protocols.
+                Your identity will be protected. Frontier follows strict source protection protocols.
               </p>
             </>
           )}

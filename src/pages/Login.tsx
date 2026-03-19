@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
 
-const AdminLogin = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,19 +19,19 @@ const AdminLogin = () => {
     if (error) {
       setError(error.message);
     } else {
-      navigate("/admin");
+      navigate("/");
     }
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+    <div className="min-h-screen bg-muted/30 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link to="/" className="font-serif text-2xl font-bold tracking-tight uppercase">
-            Frontier
+          <Link to="/" className="font-serif text-3xl font-bold tracking-tight">
+            FRONTIER
           </Link>
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-2">
-            Admin Login
+          <p className="text-sm text-muted-foreground mt-2">
+            Sign in to your account
           </p>
         </div>
 
@@ -76,8 +75,17 @@ const AdminLogin = () => {
         </form>
 
         <div className="text-center mt-4">
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-foreground font-medium hover:underline">
+              Sign Up
+            </Link>
+          </p>
+        </div>
+
+        <div className="text-center mt-2">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            ← Back to Site
+            ← Back to Frontier
           </Link>
         </div>
       </div>
@@ -85,4 +93,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default Login;

@@ -5,11 +5,11 @@ const Footer = () => (
     <div className="container py-12 md:py-16">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="md:col-span-1">
-          <span className="font-serif text-2xl font-bold">
-            Core<span className="text-primary">News</span>
+          <span className="font-serif text-2xl font-bold uppercase tracking-tight">
+            Frontier
           </span>
           <p className="mt-3 text-sm text-background/60 leading-relaxed">
-            Independent Nigerian journalism. Accurate, balanced, and timely information for informed citizens.
+            Independent journalism. Global perspective. Accurate, balanced, and timely information for informed citizens.
           </p>
         </div>
 
@@ -27,7 +27,7 @@ const Footer = () => (
         <div>
           <h4 className="text-xs font-bold uppercase tracking-widest mb-4 text-background/40">Company</h4>
           <div className="flex flex-col gap-2">
-            <Link to="/about" className="text-sm text-background/60 hover:text-background transition-colors">About CoreNews</Link>
+            <Link to="/about" className="text-sm text-background/60 hover:text-background transition-colors">About Frontier</Link>
             <Link to="/contact" className="text-sm text-background/60 hover:text-background transition-colors">Contact Us</Link>
             <Link to="/contact" className="text-sm text-background/60 hover:text-background transition-colors">Submit a Story</Link>
             <Link to="/contact" className="text-sm text-background/60 hover:text-background transition-colors">Advertise</Link>
@@ -56,10 +56,12 @@ const Footer = () => (
       </div>
 
       <div className="border-t border-background/10 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p className="text-xs text-background/40">© {new Date().getFullYear()} CoreNews. All rights reserved.</p>
+        <p className="text-xs text-background/40">© {new Date().getFullYear()} Frontier. All rights reserved.</p>
         <div className="flex gap-4">
           <span className="text-xs text-background/40">Privacy Policy</span>
-          <span className="text-xs text-background/40">Terms of Service</span>
+          <Link to="/admin/login" className="text-xs text-background/40 hover:text-background/40 transition-colors cursor-default">
+            Terms of Service
+          </Link>
         </div>
       </div>
     </div>
