@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { user, signOut } = useAuth();
 
   const navigationItems = [
     { name: "Home", path: "/" },
@@ -29,7 +31,11 @@ const Header = () => {
         <div className="hidden md:flex items-center gap-4">
           <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
           <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
-          <Link to="/admin" className="hover:text-foreground transition-colors font-medium">Admin</Link>
+          {user ? (
+            <button onClick={() => signOut()} className="hover:text-foreground transition-colors">Sign Out</button>
+          ) : (
+            <Link to="/login" className="hover:text-foreground transition-colors font-medium">Sign In</Link>
+          )}
         </div>
       </div>
 
@@ -37,8 +43,8 @@ const Header = () => {
       <div className="container flex flex-col gap-3 py-4 md:py-6 border-t border-border">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <span className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-foreground">
-              Core<span className="text-primary">News</span>
+            <span className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-foreground uppercase">
+              Frontier
             </span>
           </Link>
           <button
@@ -50,6 +56,10 @@ const Header = () => {
           </button>
         </div>
 
+        <p className="text-sm text-muted-foreground font-medium hidden md:block -mt-2">
+          Independent journalism. Global perspective.
+        </p>
+
         <div className="flex w-full items-center justify-between gap-3">
           <div className="relative w-full md:max-w-md">
             <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
@@ -57,13 +67,20 @@ const Header = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full border border-border rounded py-2 pl-10 pr-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-              placeholder="Search CoreNews..."
-              aria-label="Search CoreNews"
+              placeholder="Search Frontier..."
+              aria-label="Search Frontier"
             />
           </div>
-          <Link to="/admin" className="hidden md:inline-flex items-center rounded border border-border px-3 py-2 text-xs font-semibold transition hover:bg-muted">
-            Admin
-          </Link>
+          {user ? (
+            <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
+              <User className="h-4 w-4" />
+              <span>{user.email?.split("@")[0]}</span>
+            </div>
+          ) : (
+            <Link to="/signup" className="hidden md:inline-flex items-center rounded border border-border px-3 py-2 text-xs font-semibold transition hover:bg-muted">
+              Sign Up
+            </Link>
+          )}
         </div>
       </div>
 
@@ -94,6 +111,16 @@ const Header = () => {
             ))}
             <Link to="/about" className="nav-link text-sm py-2 border-b border-border" onClick={() => setMobileOpen(false)}>About</Link>
             <Link to="/contact" className="nav-link text-sm py-2 border-b border-border" onClick={() => setMobileOpen(false)}>Contact</Link>
+            {user ? (
+              <button onClick={() => { signOut(); setMobileOpen(false); }} className="nav-link text-sm py-2 border-b border-border text-left">
+                Sign Out
+              </button>
+            ) : (
+              <>
+                <Link to="/login" className="nav-link text-sm py-2 border-b border-border" onClick={() => setMobileOpen(false)}>Sign In</Link>
+                <Link to="/signup" className="nav-link text-sm py-2 border-b border-border" onClick={() => setMobileOpen(false)}>Sign Up</Link>
+              </>
+            )}
           </div>
         </nav>
       )}

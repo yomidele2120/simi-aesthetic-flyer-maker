@@ -252,7 +252,7 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
           messages: [
             {
               role: "system",
-              content: "You are a senior editor at CoreNews, a leading Nigerian news platform. Process the following news article. Prioritize Nigerian relevance when categorizing. For Nigeria-related content, use category 'Nigeria'. For international content, use 'World'.",
+              content: "You are a senior editor at Frontier, a leading Nigerian news platform. Process the following news article. Prioritize Nigerian relevance when categorizing. For Nigeria-related content, use category 'Nigeria'. For international content, use 'World'.",
             },
             {
               role: "user",

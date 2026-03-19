@@ -49,7 +49,7 @@ const ArticlePage = () => {
             content: data.content || "",
             category: data.category,
             subcategory: data.subcategory || undefined,
-            author: data.author || "CoreNews Staff",
+            author: data.author || "Frontier Staff",
             date: data.published_at ? new Date(data.published_at).toLocaleDateString() : "",
             imageUrl: data.image_url || "",
             readTime: data.read_time || "5 min",
@@ -82,7 +82,7 @@ const ArticlePage = () => {
             subheadline: r.subheadline || "",
             content: r.content || "",
             category: r.category,
-            author: r.author || "CoreNews Staff",
+            author: r.author || "Frontier Staff",
             date: r.published_at ? new Date(r.published_at).toLocaleDateString() : "",
             imageUrl: r.image_url || "",
             readTime: r.read_time || "5 min",
@@ -129,7 +129,7 @@ const ArticlePage = () => {
     );
   }
 
-  const bodyContent = article.content || article.summary + "\n\nThis is a developing story. CoreNews will provide updates as more information becomes available.";
+  const bodyContent = article.content || article.summary + "\n\nThis is a developing story. Frontier will provide updates as more information becomes available.";
 
   // Get non-featured media for gallery
   const galleryMedia = media.filter((m) => !m.is_featured);
@@ -227,7 +227,7 @@ const ArticlePage = () => {
             {/* Like button */}
             <div className="mt-6 flex items-center gap-4">
               <ArticleLikes articleId={id!} />
-              <span className="text-xs text-muted-foreground">Augmented by CoreNews AI</span>
+              <span className="text-xs text-muted-foreground">Augmented by Frontier AI</span>
             </div>
 
             {/* Comments section */}

@@ -12,7 +12,6 @@ serve(async (req) => {
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-    // Use Groq if available, otherwise fall back to Lovable AI
     const useGroq = !!GROQ_API_KEY;
     const apiKey = useGroq ? GROQ_API_KEY : LOVABLE_API_KEY;
     const apiUrl = useGroq
@@ -29,22 +28,40 @@ serve(async (req) => {
 
     switch (action) {
       case "rewrite":
-        systemPrompt = "You are a senior journalist at a professional Nigerian news outlet called CoreNews. Rewrite the following article in a clear, professional journalistic format. Use inverted pyramid style. Include a compelling lede, context, quotes where appropriate, and a strong conclusion. Output only the article text.";
-        userPrompt = `Title: ${title}\n\nOriginal content: ${summary || content}`;
+        systemPrompt = `You are a senior investigative journalist at Frontier, a leading global news platform. Your task is to transform the provided source material into a comprehensive, deeply detailed, and engaging long-form news article.
+
+REQUIREMENTS:
+- Write in professional journalism style similar to Reuters, BBC, or Al Jazeera
+- Start with a powerful, attention-grabbing opening paragraph (the hook)
+- Include detailed explanation of the event or topic with full context
+- Provide background context, historical relevance, and how we got here
+- Include expert-style analysis and commentary where appropriate
+- Explain the impact on society, politics, economy, or technology
+- Use multiple paragraphs, each exploring a different angle of the story
+- Include a strong concluding section that summarizes key takeaways
+- The article should be at least 800-1200 words
+- Use inverted pyramid style but maintain reader engagement throughout
+- Write in a way that makes readers want to stay on the page
+- Avoid shallow summaries — every section should add value and depth
+- Use specific details, data points, and contextual information
+- The tone should be authoritative yet accessible
+
+Output ONLY the article text, no meta commentary.`;
+        userPrompt = `Title: ${title}\n\nSource material: ${content || summary}`;
         break;
 
       case "headlines":
-        systemPrompt = "You are an expert headline writer for a Nigerian news platform. Generate exactly 5 catchy, engaging headlines for the following article. Each headline should be concise (under 80 characters), attention-grabbing, and accurate. Return them as a JSON array of strings.";
+        systemPrompt = "You are an expert headline writer for Frontier, a global news platform. Generate exactly 5 catchy, engaging headlines for the following article. Each headline should be concise (under 80 characters), attention-grabbing, and accurate. Return them as a JSON array of strings.";
         userPrompt = `Title: ${title}\n\nSummary: ${summary}`;
         break;
 
       case "summarize":
-        systemPrompt = "You are a news editor. Write a concise 2-3 sentence summary of the following article that captures the key facts. Output only the summary.";
+        systemPrompt = "You are a news editor at Frontier. Write a concise 2-3 sentence summary of the following article that captures the key facts. Output only the summary.";
         userPrompt = `Title: ${title}\n\nContent: ${content || summary}`;
         break;
 
       case "seo":
-        systemPrompt = "You are an SEO specialist for a news website. Generate an SEO-optimized title (under 60 chars) and meta description (under 160 chars) for this article. Also generate 5-8 relevant SEO keywords. Return as JSON: {\"seoTitle\": \"...\", \"seoDescription\": \"...\", \"keywords\": [...]}";
+        systemPrompt = "You are an SEO specialist for Frontier news platform. Generate an SEO-optimized title (under 60 chars) and meta description (under 160 chars) for this article. Also generate 5-8 relevant SEO keywords. Return as JSON: {\"seoTitle\": \"...\", \"seoDescription\": \"...\", \"keywords\": [...]}";
         userPrompt = `Title: ${title}\n\nSummary: ${summary}`;
         break;
 

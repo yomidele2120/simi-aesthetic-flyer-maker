@@ -56,14 +56,14 @@ type MediaItem = {
   isFeatured: boolean;
 };
 
-const CATEGORIES = ["Nigeria", "World", "Business & Economy", "Technology", "Investigations", "Opinions", "Sports", "Politics"];
+const CATEGORIES = ["Nigeria", "World", "Business & Economy", "Technology", "Investigations", "Opinions", "Sports", "Politics", "Science", "Health", "Entertainment"];
 
 const AdminDashboard = () => {
   const { signOut } = useAuth();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [publishedArticles, setPublishedArticles] = useState<PublishedArticle[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"pulse" | "published" | "api-status">("pulse");
+  const [activeTab, setActiveTab] = useState<"pulse" | "published" | "create" | "api-status">("pulse");
   const [isDiscovering, setIsDiscovering] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
   const [isGeneratingHeadlines, setIsGeneratingHeadlines] = useState(false);
@@ -621,13 +621,90 @@ const AdminDashboard = () => {
     </div>
   );
 
+  // Manual story creation
+  const [isPublishingManual, setIsPublishingManual] = useState(false);
+
+  const initManualCreate = () => {
+    setActiveTab("create");
+    setSelectedSuggestion(null);
+    setEditingPublishedId(null);
+    setEditHeadline("");
+    setEditCategory("Nigeria");
+    setEditContent("");
+    setEditSummary("");
+    setEditTags("");
+    setEditIsBreaking(false);
+    setEditIsFeatured(false);
+    setEditHeroEnabled(false);
+    setEditImportance(50);
+    setMediaItems([]);
+  };
+
+  const publishManualStory = async (asDraft = false) => {
+    if (!editHeadline.trim()) {
+      toast({ title: "Title required", variant: "destructive" });
+      return;
+    }
+    if (!asDraft && mediaItems.length === 0) {
+      toast({ title: "Media Required", description: "Please add at least one image before publishing.", variant: "destructive" });
+      return;
+    }
+
+    setIsPublishingManual(true);
+    try {
+      const featuredMedia = mediaItems.find((m) => m.isFeatured) || mediaItems[0];
+      const heroExpiresAt = editHeroEnabled
+        ? new Date(Date.now() + parseInt(editHeroDuration) * 3600 * 1000).toISOString()
+        : null;
+
+      const { data: inserted, error: insertError } = await supabase.from("articles").insert({
+        title: editHeadline,
+        summary: editSummary,
+        content: editContent,
+        category: editCategory,
+        image_url: featuredMedia?.url || null,
+        status: asDraft ? "draft" : "published",
+        published_at: asDraft ? null : new Date().toISOString(),
+        is_breaking: editIsBreaking,
+        is_featured: editIsFeatured,
+        is_trending: false,
+        hero_enabled: editHeroEnabled,
+        hero_expires_at: heroExpiresAt,
+        tags: editTags ? editTags.split(",").map((t) => t.trim()) : [],
+        importance_score: editImportance,
+        author: "Frontier Staff",
+      }).select("id").single();
+
+      if (insertError) throw insertError;
+
+      if (inserted && mediaItems.length > 1) {
+        const mediaRecords = mediaItems.map((m, i) => ({
+          article_id: inserted.id,
+          media_url: m.url,
+          media_type: m.type,
+          is_featured: m.isFeatured,
+          position: i,
+        }));
+        await supabase.from("article_media").insert(mediaRecords);
+      }
+
+      toast({ title: asDraft ? "Saved as Draft" : "Story Published!", description: asDraft ? "Article saved." : "Article is now live." });
+      initManualCreate();
+      await fetchPublished();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setIsPublishingManual(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-background border-b border-border">
         <div className="container flex items-center justify-between py-4">
           <div className="flex items-center gap-4">
-            <Link to="/" className="font-serif text-xl font-bold">
-              Core<span className="text-primary">News</span>
+            <Link to="/" className="font-serif text-xl font-bold uppercase tracking-tight">
+              Frontier
             </Link>
             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-border pl-4">
               Admin Dashboard
@@ -655,6 +732,17 @@ const AdminDashboard = () => {
             <span className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
               AI News Pulse
+            </span>
+          </button>
+          <button
+            onClick={initManualCreate}
+            className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "create" ? "border-foreground text-foreground" : "border-transparent text-muted-foreground"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <PenLine className="h-4 w-4" />
+              Create Story
             </span>
           </button>
           <button
@@ -780,6 +868,150 @@ const AdminDashboard = () => {
                 {renderEditor("edit-published")}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Create Story Tab */}
+        {activeTab === "create" && (
+          <div className="max-w-3xl">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4 pb-2 border-b border-border">
+              Create Story Manually
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              Write and publish a story from scratch without AI assistance.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Story Title *</label>
+                <input value={editHeadline} onChange={(e) => setEditHeadline(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm font-serif font-semibold focus:outline-none focus:border-foreground transition-colors bg-background"
+                  placeholder="Enter a compelling headline..." />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Category</label>
+                  <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm focus:outline-none focus:border-foreground transition-colors bg-background">
+                    {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Tags (comma separated)</label>
+                  <input value={editTags} onChange={(e) => setEditTags(e.target.value)} placeholder="politics, economy"
+                    className="w-full border border-border px-3 py-2 text-sm focus:outline-none focus:border-foreground transition-colors bg-background" />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Story Highlights / Summary</label>
+                <textarea rows={3} value={editSummary} onChange={(e) => setEditSummary(e.target.value)}
+                  placeholder="A brief summary of the story..."
+                  className="w-full border border-border px-3 py-2 text-sm focus:outline-none focus:border-foreground transition-colors bg-background resize-none leading-relaxed" />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Full Story Content *</label>
+                <textarea rows={16} value={editContent} onChange={(e) => setEditContent(e.target.value)}
+                  placeholder="Write the full story here. Use double line breaks for paragraphs..."
+                  className="w-full border border-border px-3 py-2 text-sm focus:outline-none focus:border-foreground transition-colors bg-background resize-none leading-relaxed" />
+              </div>
+
+              {/* Article Settings */}
+              <div className="p-4 border border-border bg-muted/30">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Article Settings</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={editIsBreaking} onChange={(e) => setEditIsBreaking(e.target.checked)} className="rounded" />
+                    <Zap className="h-3 w-3 text-destructive" /> Breaking News
+                  </label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={editIsFeatured} onChange={(e) => setEditIsFeatured(e.target.checked)} className="rounded" />
+                    <Star className="h-3 w-3 text-yellow-500" /> Featured
+                  </label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input type="checkbox" checked={editHeroEnabled} onChange={(e) => setEditHeroEnabled(e.target.checked)} className="rounded" />
+                    <Globe className="h-3 w-3 text-accent" /> Hero Section
+                  </label>
+                </div>
+                {editHeroEnabled && (
+                  <div className="mt-3">
+                    <label className="text-xs text-muted-foreground block mb-1">Hero Duration (hours)</label>
+                    <select value={editHeroDuration} onChange={(e) => setEditHeroDuration(e.target.value)}
+                      className="border border-border px-3 py-1.5 text-sm bg-background">
+                      <option value="24">24 hours</option>
+                      <option value="48">48 hours</option>
+                      <option value="72">72 hours</option>
+                      <option value="168">1 week</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Media Section */}
+              <div className="p-4 border border-border bg-muted/30">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                  Featured Image & Gallery
+                </p>
+
+                {mediaItems.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    {mediaItems.map((m, i) => (
+                      <div key={i} className={`relative border ${m.isFeatured ? "border-primary" : "border-border"} bg-background overflow-hidden`}>
+                        {m.type === "image" ? (
+                          <img src={m.url} alt="" className="w-full h-20 object-cover" />
+                        ) : (
+                          <div className="w-full h-20 flex items-center justify-center bg-muted text-xs text-muted-foreground">
+                            {m.type === "youtube" ? "YouTube" : "Video"}
+                          </div>
+                        )}
+                        <div className="absolute top-1 right-1 flex gap-1">
+                          {!m.isFeatured && (
+                            <button onClick={() => setFeatured(i)} className="bg-background/80 p-0.5 rounded" title="Set as featured">
+                              <Star className="h-3 w-3" />
+                            </button>
+                          )}
+                          <button onClick={() => removeMedia(i)} className="bg-background/80 p-0.5 rounded text-destructive" title="Remove">
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                        {m.isFeatured && (
+                          <span className="absolute bottom-0 left-0 right-0 text-[9px] bg-primary text-primary-foreground text-center py-0.5">Featured</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <input type="file" ref={fileInputRef} onChange={handleFileUpload} multiple accept="image/jpeg,image/png,image/webp,video/mp4" className="hidden" />
+                  <button onClick={() => fileInputRef.current?.click()} disabled={isUploading} className="ghost-button flex items-center gap-2 text-xs flex-1">
+                    {isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                    Upload from Device
+                  </button>
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <input value={mediaUrlInput} onChange={(e) => setMediaUrlInput(e.target.value)} placeholder="Paste image/video URL"
+                    className="flex-1 border border-border px-3 py-1.5 text-xs bg-background focus:outline-none focus:border-foreground" />
+                  <button onClick={addMediaUrl} className="ghost-button text-xs flex items-center gap-1">
+                    <Link2 className="h-3 w-3" /> Add URL
+                  </button>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3 flex-wrap pt-4">
+                <button onClick={() => publishManualStory(false)} disabled={isPublishingManual}
+                  className="bg-foreground text-background px-6 py-3 text-sm font-bold uppercase tracking-wider hover:bg-foreground/90 transition-colors flex items-center gap-2 disabled:opacity-50">
+                  {isPublishingManual ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  {isPublishingManual ? "Publishing..." : "Publish Story"}
+                </button>
+                <button onClick={() => publishManualStory(true)} className="ghost-button flex items-center gap-2 text-xs">
+                  <Archive className="h-3 w-3" /> Save as Draft
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
