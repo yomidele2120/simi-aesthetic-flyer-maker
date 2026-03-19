@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SITE_URL = "https://simi-aesthetic-flyer-maker.lovable.app";
+const SITE_URL = "https://frontier.ng";
 
 const CATEGORIES = [
   "nigeria", "world", "politics", "business", "business-economy",
