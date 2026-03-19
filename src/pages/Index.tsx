@@ -73,7 +73,7 @@ const Index = () => {
           summary: a.summary || "",
           content: a.content || "",
           category: a.category,
-          author: a.author || "CoreNews Staff",
+          author: a.author || "Frontier Staff",
           date: a.published_at ? new Date(a.published_at).toLocaleDateString() : "",
           imageUrl: a.image_url || "",
           readTime: a.read_time || "5 min",
