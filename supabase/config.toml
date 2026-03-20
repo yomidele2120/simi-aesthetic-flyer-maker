@@ -17,3 +17,12 @@ verify_jwt = false
 
 [functions.chroma-duplicates]
 verify_jwt = false
+
+[functions.unsplash-image]
+verify_jwt = false
+
+[functions.firecrawl-scrape]
+verify_jwt = false
+
+[functions.tavily-search]
+verify_jwt = false
