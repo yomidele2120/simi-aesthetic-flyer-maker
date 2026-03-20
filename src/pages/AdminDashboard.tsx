@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import {
   RefreshCw, Sparkles, PenLine, Send, ChevronRight, LogOut, Loader2,
   CheckCircle, XCircle, Upload, Link2, Image, Trash2, Eye, Edit3,
-  AlertTriangle, Settings, Star, Zap, Archive, Globe
+  AlertTriangle, Settings, Star, Zap, Archive, Globe, Search
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
