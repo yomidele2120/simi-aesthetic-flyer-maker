@@ -404,6 +404,23 @@ serve(async (req) => {
     const processed = await processWithAI(allItems, GROQ_API_KEY, LOVABLE_API_KEY);
     console.log(`AI processed: ${processed.length} items`);
 
+    // Step 5b: Fetch Unsplash images for items without images
+    if (UNSPLASH_ACCESS_KEY) {
+      for (const item of processed) {
+        if (!item.image_url || item.image_url === "") {
+          const keywords = (item.ai_title || item.original_title).split(" ").slice(0, 4).join(" ");
+          const photo = await fetchUnsplashImage(UNSPLASH_ACCESS_KEY, keywords);
+          if (photo) {
+            item.image_url = photo.url;
+            // Store attribution in tags
+            const existingTags = Array.isArray(item.tags) ? item.tags : [];
+            item.tags = [...existingTags, `Photo: ${photo.photographerName}`];
+          }
+        }
+      }
+      console.log("Unsplash image enrichment done");
+    }
+
     // Step 6: Save to database
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
