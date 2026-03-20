@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import {
   RefreshCw, Sparkles, PenLine, Send, ChevronRight, LogOut, Loader2,
   CheckCircle, XCircle, Upload, Link2, Image, Trash2, Eye, Edit3,
-  AlertTriangle, Settings, Star, Zap, Archive, Globe
+  AlertTriangle, Settings, Star, Zap, Archive, Globe, Search
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -91,6 +91,37 @@ const AdminDashboard = () => {
   // Edit published article mode
   const [editingPublishedId, setEditingPublishedId] = useState<string | null>(null);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+  // Unsplash search
+  const [unsplashQuery, setUnsplashQuery] = useState("");
+  const [unsplashResults, setUnsplashResults] = useState<{ url: string; photographerName: string; photographerUrl: string; thumb: string }[]>([]);
+  const [isSearchingUnsplash, setIsSearchingUnsplash] = useState(false);
+
+  const searchUnsplash = async () => {
+    const q = unsplashQuery.trim() || editHeadline;
+    if (!q) return;
+    setIsSearchingUnsplash(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("unsplash-image", {
+        body: { query: q, count: 6 },
+      });
+      if (error) throw error;
+      setUnsplashResults(data.results || []);
+    } catch (e: any) {
+      toast({ title: "Unsplash Error", description: e.message, variant: "destructive" });
+    } finally {
+      setIsSearchingUnsplash(false);
+    }
+  };
+
+  const selectUnsplashImage = (img: { url: string; photographerName: string }) => {
+    setMediaItems((prev) => [
+      ...prev,
+      { url: img.url, type: "image" as const, isFeatured: prev.length === 0 },
+    ]);
+    setUnsplashResults([]);
+    toast({ title: "Image added", description: `Photo by ${img.photographerName} (Unsplash)` });
+  };
 
   const fetchSuggestions = async () => {
     const { data } = await supabase
@@ -462,7 +493,7 @@ const AdminDashboard = () => {
             className="w-full border border-border px-3 py-2 text-sm font-serif font-semibold focus:outline-none focus:border-foreground transition-colors bg-background" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Category</label>
             <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)}
@@ -575,6 +606,31 @@ const AdminDashboard = () => {
             <button onClick={addMediaUrl} className="ghost-button text-xs flex items-center gap-1">
               <Link2 className="h-3 w-3" /> Add URL
             </button>
+          </div>
+
+          {/* Unsplash Search */}
+          <div className="mt-3 border-t border-border pt-3">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Search Unsplash</p>
+            <div className="flex gap-2">
+              <input value={unsplashQuery} onChange={(e) => setUnsplashQuery(e.target.value)}
+                placeholder={editHeadline || "Search for photos..."}
+                className="flex-1 border border-border px-3 py-1.5 text-xs bg-background focus:outline-none focus:border-foreground" />
+              <button onClick={searchUnsplash} disabled={isSearchingUnsplash} className="ghost-button text-xs flex items-center gap-1">
+                {isSearchingUnsplash ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />} Search
+              </button>
+            </div>
+            {unsplashResults.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                {unsplashResults.map((img, i) => (
+                  <button key={i} onClick={() => selectUnsplashImage(img)} className="relative group overflow-hidden border border-border hover:border-primary transition-colors">
+                    <img src={img.thumb || img.url} alt="" className="w-full h-16 object-cover" />
+                    <span className="absolute bottom-0 left-0 right-0 text-[8px] bg-black/60 text-white px-1 py-0.5 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                      {img.photographerName}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -701,28 +757,28 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-background border-b border-border">
-        <div className="container flex items-center justify-between py-4">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="font-serif text-xl font-bold uppercase tracking-tight">
+        <div className="container flex items-center justify-between py-3 px-3 md:px-6 gap-2">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0">
+            <Link to="/" className="font-serif text-lg md:text-xl font-bold uppercase tracking-tight shrink-0">
               Frontier
             </Link>
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-border pl-4">
-              Admin Dashboard
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-border pl-2 md:pl-4 shrink-0">
+              Admin
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              ← Back to Site
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            <Link to="/" className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground transition-colors">
+              ← Site
             </Link>
-            <button onClick={signOut} className="ghost-button flex items-center gap-2 text-xs">
-              <LogOut className="h-3 w-3" /> Sign Out
+            <button onClick={signOut} className="ghost-button flex items-center gap-1 text-xs px-2 py-1.5 md:px-4 md:py-2">
+              <LogOut className="h-3 w-3" /> <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </div>
       </header>
 
-      <div className="container py-8">
-        <div className="flex gap-1 mb-8 border-b border-border overflow-x-auto">
+      <div className="container py-4 md:py-8 px-3 md:px-6">
+        <div className="flex gap-1 mb-6 md:mb-8 border-b border-border overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0">
           <button
             onClick={() => setActiveTab("pulse")}
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
@@ -838,23 +894,23 @@ const AdminDashboard = () => {
                   <p className="text-sm text-muted-foreground text-center py-12">No published articles yet.</p>
                 )}
                 {publishedArticles.map((a) => (
-                  <div key={a.id} className={`flex items-center justify-between border-b border-border py-4 ${editingPublishedId === a.id ? "bg-muted/50" : ""}`}>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                  <div key={a.id} className={`flex flex-col sm:flex-row sm:items-center justify-between border-b border-border py-4 gap-2 ${editingPublishedId === a.id ? "bg-muted/50" : ""}`}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="category-tag text-[10px]">{a.category}</span>
                         {a.is_breaking && <span className="text-[10px] bg-destructive/10 text-destructive px-1.5 py-0.5 rounded font-bold">BREAKING</span>}
                         {a.hero_enabled && <span className="text-[10px] bg-accent/10 text-accent px-1.5 py-0.5 rounded font-bold">HERO</span>}
                       </div>
-                      <h3 className="text-sm font-serif font-semibold">{a.title}</h3>
+                      <h3 className="text-sm font-serif font-semibold truncate">{a.title}</h3>
                       <span className="meta-text text-xs">
                         {a.author} · {a.published_at ? new Date(a.published_at).toLocaleDateString() : "Draft"}
                       </span>
                     </div>
-                    <div className="flex gap-2 ml-4">
-                      <button onClick={() => startEditingPublished(a)} className="ghost-button text-xs flex items-center gap-1">
+                    <div className="flex gap-2 shrink-0">
+                      <button onClick={() => startEditingPublished(a)} className="ghost-button text-xs flex items-center gap-1 px-2 py-1.5">
                         <Edit3 className="h-3 w-3" /> Edit
                       </button>
-                      <Link to={`/article/${a.id}`} className="ghost-button text-xs flex items-center gap-1">
+                      <Link to={`/article/${a.id}`} className="ghost-button text-xs flex items-center gap-1 px-2 py-1.5">
                         <Eye className="h-3 w-3" /> View
                       </Link>
                     </div>
@@ -889,7 +945,7 @@ const AdminDashboard = () => {
                   placeholder="Enter a compelling headline..." />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Category</label>
                   <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)}
@@ -997,6 +1053,31 @@ const AdminDashboard = () => {
                   <button onClick={addMediaUrl} className="ghost-button text-xs flex items-center gap-1">
                     <Link2 className="h-3 w-3" /> Add URL
                   </button>
+                </div>
+
+                {/* Unsplash Search */}
+                <div className="mt-3 border-t border-border pt-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Search Unsplash</p>
+                  <div className="flex gap-2">
+                    <input value={unsplashQuery} onChange={(e) => setUnsplashQuery(e.target.value)}
+                      placeholder={editHeadline || "Search for photos..."}
+                      className="flex-1 border border-border px-3 py-1.5 text-xs bg-background focus:outline-none focus:border-foreground" />
+                    <button onClick={searchUnsplash} disabled={isSearchingUnsplash} className="ghost-button text-xs flex items-center gap-1">
+                      {isSearchingUnsplash ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />} Search
+                    </button>
+                  </div>
+                  {unsplashResults.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 mt-2">
+                      {unsplashResults.map((img, i) => (
+                        <button key={i} onClick={() => selectUnsplashImage(img)} className="relative group overflow-hidden border border-border hover:border-primary transition-colors">
+                          <img src={img.thumb || img.url} alt="" className="w-full h-16 object-cover" />
+                          <span className="absolute bottom-0 left-0 right-0 text-[8px] bg-black/60 text-white px-1 py-0.5 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                            {img.photographerName}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

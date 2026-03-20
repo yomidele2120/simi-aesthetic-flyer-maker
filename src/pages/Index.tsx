@@ -4,6 +4,7 @@ import ArticleCard from "@/components/news/ArticleCard";
 import HeroSlideshow from "@/components/news/HeroSlideshow";
 import NewsletterSignup from "@/components/news/NewsletterSignup";
 import VideoNewsSection from "@/components/news/VideoNewsSection";
+import AuthPromptDialog, { useWelcomePrompt } from "@/components/news/AuthPromptDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { articles as mockArticles, categories } from "@/lib/mockData";
 import { type Article } from "@/lib/mockData";
@@ -12,6 +13,7 @@ import { Link } from "react-router-dom";
 const PAGE_SIZE = 8;
 
 const Index = () => {
+  const { showWelcome, setShowWelcome } = useWelcomePrompt();
   const [dbArticles, setDbArticles] = useState<Article[]>([]);
   const [heroArticles, setHeroArticles] = useState<Article[]>([]);
   const [mostReadArticles, setMostReadArticles] = useState<Article[]>([]);
@@ -195,6 +197,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <AuthPromptDialog open={showWelcome} onClose={() => setShowWelcome(false)} />
       <section className="container py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">

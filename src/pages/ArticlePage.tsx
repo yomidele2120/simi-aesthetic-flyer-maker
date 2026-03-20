@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { articles as mockArticles, type Article } from "@/lib/mockData";
-import { Share2, Facebook, Twitter } from "lucide-react";
 import ArticleCard from "@/components/news/ArticleCard";
 import ArticleLikes from "@/components/news/ArticleLikes";
 import ArticleComments from "@/components/news/ArticleComments";
+import ShareButtons from "@/components/news/ShareButtons";
+import AuthPromptDialog, { useWelcomePrompt } from "@/components/news/AuthPromptDialog";
 
 type MediaItem = {
   id: string;
@@ -22,6 +23,7 @@ const ArticlePage = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [relatedFromDb, setRelatedFromDb] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showWelcome, setShowWelcome } = useWelcomePrompt();
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -154,6 +156,7 @@ const ArticlePage = () => {
 
   return (
     <Layout>
+      <AuthPromptDialog open={showWelcome} onClose={() => setShowWelcome(false)} />
       <article className="container py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
@@ -173,15 +176,7 @@ const ArticlePage = () => {
 
             <div className="flex items-center gap-3 py-4 border-b border-border">
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Share</span>
-              <button className="p-2 hover:bg-muted rounded transition-colors" aria-label="Share">
-                <Share2 className="h-4 w-4" />
-              </button>
-              <button className="p-2 hover:bg-muted rounded transition-colors" aria-label="Twitter">
-                <Twitter className="h-4 w-4" />
-              </button>
-              <button className="p-2 hover:bg-muted rounded transition-colors" aria-label="Facebook">
-                <Facebook className="h-4 w-4" />
-              </button>
+              <ShareButtons title={article.title} articleId={article.id} />
             </div>
 
             {/* Featured Image */}
