@@ -175,15 +175,7 @@ const ArticlePage = () => {
 
             <div className="flex items-center gap-3 py-4 border-b border-border">
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Share</span>
-              <button className="p-2 hover:bg-muted rounded transition-colors" aria-label="Share">
-                <Share2 className="h-4 w-4" />
-              </button>
-              <button className="p-2 hover:bg-muted rounded transition-colors" aria-label="Twitter">
-                <Twitter className="h-4 w-4" />
-              </button>
-              <button className="p-2 hover:bg-muted rounded transition-colors" aria-label="Facebook">
-                <Facebook className="h-4 w-4" />
-              </button>
+              <ShareButtons title={article.title} articleId={article.id} />
             </div>
 
             {/* Featured Image */}
