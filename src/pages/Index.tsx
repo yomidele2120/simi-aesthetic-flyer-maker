@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 const PAGE_SIZE = 8;
 
 const Index = () => {
+  const { showWelcome, setShowWelcome } = useWelcomePrompt();
   const [dbArticles, setDbArticles] = useState<Article[]>([]);
   const [heroArticles, setHeroArticles] = useState<Article[]>([]);
   const [mostReadArticles, setMostReadArticles] = useState<Article[]>([]);
