@@ -838,23 +838,23 @@ const AdminDashboard = () => {
                   <p className="text-sm text-muted-foreground text-center py-12">No published articles yet.</p>
                 )}
                 {publishedArticles.map((a) => (
-                  <div key={a.id} className={`flex items-center justify-between border-b border-border py-4 ${editingPublishedId === a.id ? "bg-muted/50" : ""}`}>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                  <div key={a.id} className={`flex flex-col sm:flex-row sm:items-center justify-between border-b border-border py-4 gap-2 ${editingPublishedId === a.id ? "bg-muted/50" : ""}`}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="category-tag text-[10px]">{a.category}</span>
                         {a.is_breaking && <span className="text-[10px] bg-destructive/10 text-destructive px-1.5 py-0.5 rounded font-bold">BREAKING</span>}
                         {a.hero_enabled && <span className="text-[10px] bg-accent/10 text-accent px-1.5 py-0.5 rounded font-bold">HERO</span>}
                       </div>
-                      <h3 className="text-sm font-serif font-semibold">{a.title}</h3>
+                      <h3 className="text-sm font-serif font-semibold truncate">{a.title}</h3>
                       <span className="meta-text text-xs">
                         {a.author} · {a.published_at ? new Date(a.published_at).toLocaleDateString() : "Draft"}
                       </span>
                     </div>
-                    <div className="flex gap-2 ml-4">
-                      <button onClick={() => startEditingPublished(a)} className="ghost-button text-xs flex items-center gap-1">
+                    <div className="flex gap-2 shrink-0">
+                      <button onClick={() => startEditingPublished(a)} className="ghost-button text-xs flex items-center gap-1 px-2 py-1.5">
                         <Edit3 className="h-3 w-3" /> Edit
                       </button>
-                      <Link to={`/article/${a.id}`} className="ghost-button text-xs flex items-center gap-1">
+                      <Link to={`/article/${a.id}`} className="ghost-button text-xs flex items-center gap-1 px-2 py-1.5">
                         <Eye className="h-3 w-3" /> View
                       </Link>
                     </div>
