@@ -701,21 +701,21 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="bg-background border-b border-border">
-        <div className="container flex items-center justify-between py-4">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="font-serif text-xl font-bold uppercase tracking-tight">
+        <div className="container flex items-center justify-between py-3 px-3 md:px-6 gap-2">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0">
+            <Link to="/" className="font-serif text-lg md:text-xl font-bold uppercase tracking-tight shrink-0">
               Frontier
             </Link>
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-border pl-4">
-              Admin Dashboard
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground border-l border-border pl-2 md:pl-4 shrink-0">
+              Admin
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              ← Back to Site
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            <Link to="/" className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground transition-colors">
+              ← Site
             </Link>
-            <button onClick={signOut} className="ghost-button flex items-center gap-2 text-xs">
-              <LogOut className="h-3 w-3" /> Sign Out
+            <button onClick={signOut} className="ghost-button flex items-center gap-1 text-xs px-2 py-1.5 md:px-4 md:py-2">
+              <LogOut className="h-3 w-3" /> <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </div>
