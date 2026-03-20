@@ -23,6 +23,7 @@ const ArticlePage = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [relatedFromDb, setRelatedFromDb] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showWelcome, setShowWelcome } = useWelcomePrompt();
 
   useEffect(() => {
     const fetchArticle = async () => {
