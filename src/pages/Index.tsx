@@ -4,6 +4,7 @@ import ArticleCard from "@/components/news/ArticleCard";
 import HeroSlideshow from "@/components/news/HeroSlideshow";
 import NewsletterSignup from "@/components/news/NewsletterSignup";
 import VideoNewsSection from "@/components/news/VideoNewsSection";
+import AuthPromptDialog, { useWelcomePrompt } from "@/components/news/AuthPromptDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { articles as mockArticles, categories } from "@/lib/mockData";
 import { type Article } from "@/lib/mockData";
