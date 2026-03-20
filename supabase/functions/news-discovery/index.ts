@@ -340,6 +340,7 @@ serve(async (req) => {
     const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const UNSPLASH_ACCESS_KEY = Deno.env.get("UNSPLASH_ACCESS_KEY");
 
     if (!GROQ_API_KEY && !LOVABLE_API_KEY) throw new Error("No AI API key configured");
 
