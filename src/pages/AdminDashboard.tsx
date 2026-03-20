@@ -722,7 +722,7 @@ const AdminDashboard = () => {
       </header>
 
       <div className="container py-4 md:py-8 px-3 md:px-6">
-        <div className="flex gap-1 mb-8 border-b border-border overflow-x-auto">
+        <div className="flex gap-1 mb-6 md:mb-8 border-b border-border overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0">
           <button
             onClick={() => setActiveTab("pulse")}
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
