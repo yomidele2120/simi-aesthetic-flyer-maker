@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import AuthPromptDialog from "./AuthPromptDialog";
 
 interface ArticleLikesProps {
   articleId: string;
@@ -15,6 +16,7 @@ const ArticleLikes = ({ articleId }: ArticleLikesProps) => {
   const [likeCount, setLikeCount] = useState(0);
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   useEffect(() => {
     const fetchLikes = async () => {
@@ -39,7 +41,7 @@ const ArticleLikes = ({ articleId }: ArticleLikesProps) => {
 
   const toggleLike = async () => {
     if (!user) {
-      toast({ title: "Sign in required", description: "Please sign in to like articles.", variant: "destructive" });
+      setShowAuthPrompt(true);
       return;
     }
     setLoading(true);
@@ -60,20 +62,27 @@ const ArticleLikes = ({ articleId }: ArticleLikesProps) => {
   };
 
   return (
-    <button
-      onClick={toggleLike}
-      disabled={loading}
-      className={cn(
-        "flex items-center gap-2 px-4 py-2 rounded-sm border transition-all duration-200",
-        liked
-          ? "border-primary bg-primary/10 text-primary"
-          : "border-border text-muted-foreground hover:border-primary/50 hover:text-primary"
-      )}
-      aria-label={liked ? "Unlike this article" : "Like this article"}
-    >
-      <Heart className={cn("h-4 w-4 transition-all", liked && "fill-primary")} />
-      <span className="text-sm font-medium">{likeCount}</span>
-    </button>
+    <>
+      <AuthPromptDialog
+        open={showAuthPrompt}
+        onClose={() => setShowAuthPrompt(false)}
+        message="Sign in to like this story and save your favourites."
+      />
+      <button
+        onClick={toggleLike}
+        disabled={loading}
+        className={cn(
+          "flex items-center gap-2 px-4 py-2 rounded-sm border transition-all duration-200",
+          liked
+            ? "border-primary bg-primary/10 text-primary"
+            : "border-border text-muted-foreground hover:border-primary/50 hover:text-primary"
+        )}
+        aria-label={liked ? "Unlike this article" : "Like this article"}
+      >
+        <Heart className={cn("h-4 w-4 transition-all", liked && "fill-primary")} />
+        <span className="text-sm font-medium">{likeCount}</span>
+      </button>
+    </>
   );
 };
 

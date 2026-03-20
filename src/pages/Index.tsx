@@ -197,6 +197,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <AuthPromptDialog open={showWelcome} onClose={() => setShowWelcome(false)} />
       <section className="container py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
