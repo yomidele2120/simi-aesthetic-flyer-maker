@@ -462,7 +462,7 @@ const AdminDashboard = () => {
             className="w-full border border-border px-3 py-2 text-sm font-serif font-semibold focus:outline-none focus:border-foreground transition-colors bg-background" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block mb-1">Category</label>
             <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)}
