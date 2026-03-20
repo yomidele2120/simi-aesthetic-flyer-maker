@@ -1054,6 +1054,31 @@ const AdminDashboard = () => {
                     <Link2 className="h-3 w-3" /> Add URL
                   </button>
                 </div>
+
+                {/* Unsplash Search */}
+                <div className="mt-3 border-t border-border pt-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Search Unsplash</p>
+                  <div className="flex gap-2">
+                    <input value={unsplashQuery} onChange={(e) => setUnsplashQuery(e.target.value)}
+                      placeholder={editHeadline || "Search for photos..."}
+                      className="flex-1 border border-border px-3 py-1.5 text-xs bg-background focus:outline-none focus:border-foreground" />
+                    <button onClick={searchUnsplash} disabled={isSearchingUnsplash} className="ghost-button text-xs flex items-center gap-1">
+                      {isSearchingUnsplash ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />} Search
+                    </button>
+                  </div>
+                  {unsplashResults.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 mt-2">
+                      {unsplashResults.map((img, i) => (
+                        <button key={i} onClick={() => selectUnsplashImage(img)} className="relative group overflow-hidden border border-border hover:border-primary transition-colors">
+                          <img src={img.thumb || img.url} alt="" className="w-full h-16 object-cover" />
+                          <span className="absolute bottom-0 left-0 right-0 text-[8px] bg-black/60 text-white px-1 py-0.5 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                            {img.photographerName}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Action buttons */}
