@@ -92,6 +92,37 @@ const AdminDashboard = () => {
   const [editingPublishedId, setEditingPublishedId] = useState<string | null>(null);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
+  // Unsplash search
+  const [unsplashQuery, setUnsplashQuery] = useState("");
+  const [unsplashResults, setUnsplashResults] = useState<{ url: string; photographerName: string; photographerUrl: string; thumb: string }[]>([]);
+  const [isSearchingUnsplash, setIsSearchingUnsplash] = useState(false);
+
+  const searchUnsplash = async () => {
+    const q = unsplashQuery.trim() || editHeadline;
+    if (!q) return;
+    setIsSearchingUnsplash(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("unsplash-image", {
+        body: { query: q, count: 6 },
+      });
+      if (error) throw error;
+      setUnsplashResults(data.results || []);
+    } catch (e: any) {
+      toast({ title: "Unsplash Error", description: e.message, variant: "destructive" });
+    } finally {
+      setIsSearchingUnsplash(false);
+    }
+  };
+
+  const selectUnsplashImage = (img: { url: string; photographerName: string }) => {
+    setMediaItems((prev) => [
+      ...prev,
+      { url: img.url, type: "image" as const, isFeatured: prev.length === 0 },
+    ]);
+    setUnsplashResults([]);
+    toast({ title: "Image added", description: `Photo by ${img.photographerName} (Unsplash)` });
+  };
+
   const fetchSuggestions = async () => {
     const { data } = await supabase
       .from("ai_suggestions")
