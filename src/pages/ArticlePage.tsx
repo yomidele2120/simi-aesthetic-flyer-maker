@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { articles as mockArticles, type Article } from "@/lib/mockData";
-import { Share2, Facebook, Twitter } from "lucide-react";
 import ArticleCard from "@/components/news/ArticleCard";
 import ArticleLikes from "@/components/news/ArticleLikes";
 import ArticleComments from "@/components/news/ArticleComments";
+import ShareButtons from "@/components/news/ShareButtons";
+import AuthPromptDialog, { useWelcomePrompt } from "@/components/news/AuthPromptDialog";
 
 type MediaItem = {
   id: string;
