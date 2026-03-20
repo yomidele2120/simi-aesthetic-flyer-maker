@@ -204,6 +204,28 @@ async function extractWithFirecrawl(apiKey: string, url: string): Promise<string
   }
 }
 
+// Unsplash image fetching
+async function fetchUnsplashImage(accessKey: string, query: string): Promise<{ url: string; photographerName: string; photographerUrl: string } | null> {
+  try {
+    const resp = await fetch(
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape&content_filter=high`,
+      { headers: { Authorization: `Client-ID ${accessKey}` } }
+    );
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    const photo = data.results?.[0];
+    if (!photo) return null;
+    return {
+      url: photo.urls?.regular || photo.urls?.small,
+      photographerName: photo.user?.name || "Unknown",
+      photographerUrl: photo.user?.links?.html || "https://unsplash.com",
+    };
+  } catch (e) {
+    console.error("Unsplash fetch error:", e);
+    return null;
+  }
+}
+
 // AI processing (Groq preferred, Lovable AI fallback)
 async function processWithAI(items: NewsItem[], groqKey: string | undefined, lovableKey: string | undefined): Promise<any[]> {
   const useGroq = !!groqKey;
