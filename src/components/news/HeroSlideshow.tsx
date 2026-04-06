@@ -15,7 +15,7 @@ const HeroSlideshow = ({ articles }: Props) => {
     if (articles.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % articles.length);
-    }, 6000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [articles.length]);
 
