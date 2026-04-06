@@ -24,9 +24,28 @@ const Index = () => {
   const loadMoreObserverRef = useRef<HTMLDivElement | null>(null);
 
   const allArticles = useMemo(() => dbArticles.length > 0 ? [...dbArticles, ...mockArticles] : mockArticles, [dbArticles]);
-  const slideshowArticles = heroArticles.length > 0
-    ? heroArticles
-    : allArticles.filter((a) => a.isFeatured || a.isBreaking).slice(0, 4);
+  const twelveHoursAgo = useMemo(() => new Date(Date.now() - 12 * 60 * 60 * 1000), []);
+
+  const slideshowArticles = useMemo(() => {
+    // Prefer DB hero articles published within the last 12 hours
+    const recentHeroes = heroArticles.filter((a) => {
+      const pubDate = new Date(a.date);
+      return pubDate >= twelveHoursAgo;
+    });
+
+    if (recentHeroes.length > 0) return recentHeroes.slice(0, 5);
+
+    // Fallback: top 5 most important from all articles (featured/breaking/trending)
+    const scored = allArticles
+      .map((a) => ({
+        ...a,
+        _score: (a.isBreaking ? 3 : 0) + (a.isFeatured ? 2 : 0) + (a.isTrending ? 1 : 0),
+      }))
+      .filter((a) => a._score > 0)
+      .sort((a, b) => b._score - a._score);
+
+    return scored.slice(0, 5);
+  }, [heroArticles, allArticles, twelveHoursAgo]);
 
   const heroStory = slideshowArticles[0] || allArticles[0];
   const heroSecondary = slideshowArticles.slice(1, 5);
