@@ -74,11 +74,18 @@ serve(async (req) => {
       }
 
       const title = suggestion.ai_title || suggestion.original_title;
+      const viralHeadline = suggestion.viral_headline || title;
       const content = suggestion.ai_content || suggestion.original_summary || "";
       const summary = suggestion.ai_summary || suggestion.original_summary || "";
       const category = suggestion.category || "Nigeria";
       const imageUrl = suggestion.image_url || "";
+      const videoUrl = suggestion.video_url || null;
       const tags = suggestion.tags || [];
+
+      // Determine urgency flags from confidence
+      const isBreaking = suggestion.confidence >= 85;
+      const isTrending = suggestion.confidence >= 65;
+      const isFeatured = suggestion.confidence >= 75;
 
       // Calculate read time
       const wordCount = content.split(/\s+/).length;
@@ -88,10 +95,12 @@ serve(async (req) => {
         .from("articles")
         .insert({
           title,
+          viral_headline: viralHeadline,
           content,
           summary,
           category,
           image_url: imageUrl,
+          video_url: videoUrl,
           tags,
           author: "Frontier Staff",
           status: "published",
@@ -99,12 +108,16 @@ serve(async (req) => {
           read_time: `${readMinutes} min`,
           source_name: suggestion.source_name,
           source_url: suggestion.source_url,
-          seo_title: title.slice(0, 60),
+          seo_title: viralHeadline.slice(0, 60),
           seo_description: summary.slice(0, 160),
-          is_featured: suggestion.confidence >= 80,
-          is_trending: suggestion.confidence >= 75,
-          is_breaking: suggestion.confidence >= 90,
+          is_featured: isFeatured,
+          is_trending: isTrending,
+          is_breaking: isBreaking,
           importance_score: suggestion.confidence || 50,
+          // Breaking news goes straight to hero
+          show_in_hero: isBreaking,
+          hero_enabled: isBreaking,
+          hero_expires_at: isBreaking ? new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString() : null,
         })
         .select("id")
         .single();

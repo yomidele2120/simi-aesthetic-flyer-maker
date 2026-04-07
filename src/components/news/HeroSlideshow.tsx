@@ -51,7 +51,7 @@ const HeroSlideshow = ({ articles }: Props) => {
                   {article.isBreaking ? "Breaking News" : article.category}
                 </span>
                 <h2 className="font-serif text-2xl md:text-4xl lg:text-5xl font-bold leading-tight max-w-4xl">
-                  {article.title}
+                  {article.viralHeadline || article.title}
                 </h2>
                 <p className="mt-3 text-sm md:text-base text-background/70 max-w-2xl line-clamp-2">
                   {article.summary}

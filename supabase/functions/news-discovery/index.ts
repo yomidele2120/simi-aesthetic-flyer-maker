@@ -257,15 +257,18 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
               parameters: {
                 type: "object",
                 properties: {
-                  ai_title: { type: "string", description: "Rewritten, engaging headline" },
+                  ai_title: { type: "string", description: "Rewritten, professional journalistic headline" },
+                  viral_headline: { type: "string", description: "Attention-grabbing viral headline for homepage/SEO. Short, engaging, high CTR but NOT clickbait. Must be factually accurate." },
                   ai_summary: { type: "string", description: "2-3 sentence professional summary" },
                   ai_content: { type: "string", description: "Full article rewrite in journalistic format, 3-5 paragraphs" },
                   ai_headlines: { type: "array", items: { type: "string" }, description: "3-5 alternative catchy headlines" },
                   category: { type: "string", enum: ["Nigeria", "World", "Business & Economy", "Technology", "Investigations", "Opinions", "Sports", "Politics"] },
+                  news_urgency: { type: "string", enum: ["breaking", "trending", "regular"], description: "Classify: 'breaking' = urgent time-sensitive high-impact; 'trending' = gaining attention not urgent; 'regular' = standard news" },
                   confidence: { type: "integer", description: "Confidence score 0-100 for news relevance" },
                   tags: { type: "array", items: { type: "string" }, description: "3-5 relevant tags" },
+                  video_url: { type: "string", description: "YouTube or video URL if the story contains video content, empty string if none" },
                 },
-                required: ["ai_title", "ai_summary", "ai_content", "ai_headlines", "category", "confidence"],
+                required: ["ai_title", "viral_headline", "ai_summary", "ai_content", "ai_headlines", "category", "news_urgency", "confidence"],
                 additionalProperties: false,
               },
             },
@@ -274,7 +277,7 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
           messages: [
             {
               role: "system",
-              content: "You are a senior editor at Frontier, a leading Nigerian news platform. Process the following news article. Prioritize Nigerian relevance when categorizing. For Nigeria-related content, use category 'Nigeria'. For international content, use 'World'.",
+              content: "You are a senior editor at Frontier, a leading Nigerian news platform. Process the following news article.\n\nRULES:\n1. Rewrite in professional journalistic tone (BBC/Reuters style). Remove filler, bias, repetition.\n2. Create TWO headlines: ai_title (standard journalistic) and viral_headline (engaging, high CTR, NOT clickbait).\n3. Classify news_urgency: 'breaking' for urgent/time-sensitive/high-impact events, 'trending' for gaining traction, 'regular' for standard.\n4. For Nigeria-related content, use category 'Nigeria'. For international, use 'World'.\n5. If the source contains video content (YouTube links etc), extract the video_url.\n6. Confidence: 80+ for breaking, 60-79 for trending, 40-59 for regular quality news.",
             },
             {
               role: "user",
@@ -293,6 +296,12 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
       const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
       if (toolCall) {
         const args = JSON.parse(toolCall.function.arguments);
+        // Map urgency to confidence boost and flags
+        const urgency = args.news_urgency || "regular";
+        let confidence = args.confidence || 50;
+        if (urgency === "breaking") confidence = Math.max(confidence, 85);
+        else if (urgency === "trending") confidence = Math.max(confidence, 65);
+        
         return {
           original_title: item.title,
           original_summary: item.description,
@@ -300,7 +309,10 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
           source_url: item.url,
           image_url: item.imageUrl,
           ...args,
+          confidence,
           ai_headlines: args.ai_headlines || [],
+          viral_headline: args.viral_headline || args.ai_title,
+          video_url: args.video_url || null,
         };
       }
     } catch (e) {

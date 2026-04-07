@@ -91,12 +91,14 @@ const Index = () => {
         const mapped: Article[] = data.map((a: any) => ({
           id: a.id,
           title: a.title,
+          viralHeadline: a.viral_headline || undefined,
           summary: a.summary || "",
           content: a.content || "",
           category: a.category,
           author: a.author || "Frontier Staff",
           date: a.published_at ? new Date(a.published_at).toLocaleDateString() : "",
           imageUrl: a.image_url || "",
+          videoUrl: a.video_url || undefined,
           readTime: a.read_time || "5 min",
           isBreaking: a.is_breaking || false,
           isFeatured: a.is_featured || false,
@@ -111,12 +113,14 @@ const Index = () => {
           .map((a: any) => ({
             id: a.id,
             title: a.title,
+            viralHeadline: a.viral_headline || undefined,
             summary: a.summary || "",
             content: a.content || "",
             category: a.category,
             author: a.author || "Frontier Staff",
             date: a.published_at ? new Date(a.published_at).toLocaleDateString() : "",
             imageUrl: a.image_url || "",
+            videoUrl: a.video_url || undefined,
             readTime: a.read_time || "5 min",
             isBreaking: a.is_breaking || false,
             isFeatured: a.is_featured || false,
@@ -230,7 +234,7 @@ const Index = () => {
                 <div className="p-6 bg-background">
                   {heroStory.isBreaking && <span className="category-tag mb-2 block">Breaking</span>}
                   <span className="category-tag mb-2 block">{heroStory.category}</span>
-                  <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">{heroStory.title}</h1>
+                  <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">{heroStory.viralHeadline || heroStory.title}</h1>
                   <p className="mt-3 text-lg text-muted-foreground leading-relaxed">{heroStory.summary}</p>
                   <div className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
                     <span>{heroStory.author}</span>

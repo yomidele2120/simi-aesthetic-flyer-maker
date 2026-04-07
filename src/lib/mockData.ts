@@ -1,6 +1,7 @@
 export type Article = {
   id: string;
   title: string;
+  viralHeadline?: string;
   summary: string;
   content: string;
   category: string;
@@ -9,6 +10,7 @@ export type Article = {
   author: string;
   date: string;
   imageUrl: string;
+  videoUrl?: string;
   readTime: string;
   isBreaking?: boolean;
   isFeatured?: boolean;
