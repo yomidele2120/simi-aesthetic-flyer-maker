@@ -65,6 +65,11 @@ Output ONLY the article text, no meta commentary.`;
         userPrompt = `Title: ${title}\n\nSummary: ${summary}`;
         break;
 
+      case "viral_headline":
+        systemPrompt = "You are a headline optimization expert at Frontier news. Generate 2 headlines for this article:\n1. Standard: Professional journalistic headline (factual, clear)\n2. Viral: Attention-grabbing, high CTR, emotionally compelling but NOT clickbait or misleading. Must preserve factual accuracy.\n\nReturn as JSON: {\"standard\": \"...\", \"viral\": \"...\"}";
+        userPrompt = `Title: ${title}\n\nSummary: ${summary}`;
+        break;
+
       default:
         throw new Error(`Unknown action: ${action}`);
     }
@@ -113,7 +118,7 @@ Output ONLY the article text, no meta commentary.`;
       } catch {
         parsed = result.split("\n").filter((l: string) => l.trim()).slice(0, 5);
       }
-    } else if (action === "seo") {
+    } else if (action === "seo" || action === "viral_headline") {
       try {
         const match = result.match(/\{[\s\S]*\}/);
         parsed = match ? JSON.parse(match[0]) : { seoTitle: title, seoDescription: summary };
