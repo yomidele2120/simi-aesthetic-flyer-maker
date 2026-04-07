@@ -221,37 +221,14 @@ const Index = () => {
   return (
     <Layout>
       <AuthPromptDialog open={showWelcome} onClose={() => setShowWelcome(false)} />
+      <HeroSlideshow articles={slideshowArticles} />
+
       <section className="container py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
-            {heroStory && (
-              <article className="mb-8 rounded-lg overflow-hidden border border-border shadow-sm">
-                {heroStory.imageUrl ? (
-                  <img src={heroStory.imageUrl} alt={heroStory.title} className="w-full h-80 object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-full h-80 bg-muted flex items-center justify-center text-muted-foreground">No hero image</div>
-                )}
-                <div className="p-6 bg-background">
-                  {heroStory.isBreaking && <span className="category-tag mb-2 block">Breaking</span>}
-                  <span className="category-tag mb-2 block">{heroStory.category}</span>
-                  <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">{heroStory.viralHeadline || heroStory.title}</h1>
-                  <p className="mt-3 text-lg text-muted-foreground leading-relaxed">{heroStory.summary}</p>
-                  <div className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
-                    <span>{heroStory.author}</span>
-                    <span>·</span>
-                    <span>{heroStory.date}</span>
-                    <span>·</span>
-                    <span>{heroStory.readTime} read</span>
-                  </div>
-                  <Link to={`/article/${heroStory.id}`} className="inline-block mt-4 rounded bg-primary px-5 py-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground hover:bg-primary/90">
-                    Read More
-                  </Link>
-                </div>
-              </article>
-            )}
-
+            <h2 className="text-2xl font-serif font-bold mb-4">Top Stories</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              {heroSecondary.map((article) => (
+              {topStoryCandidates.slice(0, 4).map((article) => (
                 <ArticleCard key={article.id} article={article} variant="hero" />
               ))}
             </div>
