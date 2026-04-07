@@ -31,6 +31,8 @@ export type Database = {
           source_url: string | null
           status: string | null
           tags: Json | null
+          video_url: string | null
+          viral_headline: string | null
         }
         Insert: {
           ai_content?: string | null
@@ -48,6 +50,8 @@ export type Database = {
           source_url?: string | null
           status?: string | null
           tags?: Json | null
+          video_url?: string | null
+          viral_headline?: string | null
         }
         Update: {
           ai_content?: string | null
@@ -65,6 +69,8 @@ export type Database = {
           source_url?: string | null
           status?: string | null
           tags?: Json | null
+          video_url?: string | null
+          viral_headline?: string | null
         }
         Relationships: []
       }
@@ -233,6 +239,8 @@ export type Database = {
           tags: Json | null
           title: string
           updated_at: string | null
+          video_url: string | null
+          viral_headline: string | null
         }
         Insert: {
           author?: string | null
@@ -264,6 +272,8 @@ export type Database = {
           tags?: Json | null
           title: string
           updated_at?: string | null
+          video_url?: string | null
+          viral_headline?: string | null
         }
         Update: {
           author?: string | null
@@ -295,6 +305,8 @@ export type Database = {
           tags?: Json | null
           title?: string
           updated_at?: string | null
+          video_url?: string | null
+          viral_headline?: string | null
         }
         Relationships: []
       }
