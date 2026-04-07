@@ -47,8 +47,6 @@ const Index = () => {
     return scored.slice(0, 5);
   }, [heroArticles, allArticles, twelveHoursAgo]);
 
-  const heroStory = slideshowArticles[0] || allArticles[0];
-  const heroSecondary = slideshowArticles.slice(1, 5);
 
   const topStoryCandidates = Array.from(new Set([
     ...allArticles.filter((a) => a.isFeatured),
@@ -265,14 +263,6 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="container py-8 md:py-12">
-        <h2 className="text-2xl font-serif font-bold mb-4">Top Stories</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {topStoryCandidates.map((story) => (
-            <ArticleCard key={story.id} article={story} />
-          ))}
-        </div>
-      </section>
 
       <VideoNewsSection candidateVideos={videoArticles.length > 0 ? videoArticles.slice(0, 5).map((a) => ({
         id: a.id,
