@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Search, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -7,6 +7,15 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
 
   const navigationItems = [
     { name: "Home", path: "/" },
@@ -61,16 +70,16 @@ const Header = () => {
         </p>
 
         <div className="flex w-full items-center justify-between gap-3">
-          <div className="relative w-full md:max-w-md">
-            <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+          <form onSubmit={handleSearch} className="relative w-full md:max-w-md">
+            <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border border-border rounded py-2 pl-10 pr-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full border border-border rounded py-2 pl-10 pr-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-background"
               placeholder="Search Frontier..."
               aria-label="Search Frontier"
             />
-          </div>
+          </form>
           {user ? (
             <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
               <User className="h-4 w-4" />
