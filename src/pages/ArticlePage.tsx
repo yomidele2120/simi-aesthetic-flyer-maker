@@ -43,9 +43,11 @@ const ArticlePage = () => {
         .maybeSingle();
 
       if (data) {
+        const videoUrl = data.video_url || undefined;
         setArticle({
             id: data.id,
             title: data.title,
+            viralHeadline: data.viral_headline || undefined,
             summary: data.summary || "",
             subheadline: data.subheadline || "",
             content: data.content || "",
@@ -54,6 +56,7 @@ const ArticlePage = () => {
             author: data.author || "Frontier Staff",
             date: data.published_at ? new Date(data.published_at).toLocaleDateString() : "",
             imageUrl: data.image_url || "",
+            videoUrl,
             readTime: data.read_time || "5 min",
             isBreaking: data.is_breaking || false,
             isFeatured: data.is_featured || false,
@@ -179,18 +182,34 @@ const ArticlePage = () => {
               <ShareButtons title={article.title} articleId={article.id} />
             </div>
 
+            {/* Video Embed */}
+            {article.videoUrl && (
+              <div className="mt-6 aspect-video bg-foreground overflow-hidden rounded-lg">
+                {article.videoUrl.includes("youtube.com") || article.videoUrl.includes("youtu.be") ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${article.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)?.[1] || ""}`}
+                    className="w-full h-full"
+                    allowFullScreen
+                    title={article.title}
+                  />
+                ) : (
+                  <video src={article.videoUrl} controls className="w-full h-full" />
+                )}
+              </div>
+            )}
+
             {/* Featured Image */}
             {article.imageUrl ? (
-              <div className="mt-6 aspect-[16/9] bg-muted overflow-hidden">
+              <div className={`${article.videoUrl ? "mt-4" : "mt-6"} aspect-[16/9] bg-muted overflow-hidden`}>
                 <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" />
               </div>
-            ) : (
+            ) : !article.videoUrl ? (
               <div className="mt-6 aspect-[16/9] bg-muted">
                 <div className="w-full h-full bg-gradient-to-br from-muted to-border flex items-center justify-center">
                   <span className="text-muted-foreground text-sm">Featured Image</span>
                 </div>
               </div>
-            )}
+            ) : null}
 
             <div className="mt-8 prose-article mx-auto lg:mx-0">
               {bodyContent.split("\n\n").map((p, i) => (
