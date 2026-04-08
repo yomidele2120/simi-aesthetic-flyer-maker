@@ -202,9 +202,9 @@ const Index = () => {
     return () => observer.disconnect();
   }, [hasMoreFeed, loadMore]);
 
-  const breakingArticles = allArticles.filter((a) => a.isBreaking).slice(0, 5);
+  const breakingArticles = allArticles.filter((a) => a.isBreaking && !heroIds.has(a.id)).slice(0, 5);
   const categoryResults = categorySlugs.map((cat) => {
-    const items = allArticles.filter((a) => a.category.toLowerCase().includes(cat.source.toLowerCase()));
+    const items = allArticles.filter((a) => a.category.toLowerCase().includes(cat.source.toLowerCase()) && !heroIds.has(a.id));
     return {
       name: cat.name,
       articles: items,
@@ -214,8 +214,8 @@ const Index = () => {
   });
 
   const trendingArticles = mostReadArticles.length > 0
-    ? mostReadArticles
-    : allArticles.filter((a) => a.isTrending).slice(0, 5);
+    ? mostReadArticles.filter(a => !heroIds.has(a.id))
+    : allArticles.filter((a) => a.isTrending && !heroIds.has(a.id)).slice(0, 5);
 
   const latestForFeed = feedItems;
 
