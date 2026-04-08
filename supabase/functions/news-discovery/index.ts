@@ -226,16 +226,17 @@ async function fetchUnsplashImage(accessKey: string, query: string): Promise<{ u
   }
 }
 
-// AI processing (Groq preferred, Lovable AI fallback)
+// AI processing (Lovable AI Gateway preferred, Groq fallback)
 async function processWithAI(items: NewsItem[], groqKey: string | undefined, lovableKey: string | undefined): Promise<any[]> {
-  const useGroq = !!groqKey;
-  const apiKey = useGroq ? groqKey : lovableKey;
+  // Prefer Lovable AI Gateway to avoid Groq rate limits
+  const useLovable = !!lovableKey;
+  const apiKey = useLovable ? lovableKey : groqKey;
   if (!apiKey) return [];
 
-  const apiUrl = useGroq
-    ? "https://api.groq.com/openai/v1/chat/completions"
-    : "https://ai.gateway.lovable.dev/v1/chat/completions";
-  const model = useGroq ? "llama-3.3-70b-versatile" : "google/gemini-2.5-flash-lite";
+  const apiUrl = useLovable
+    ? "https://ai.gateway.lovable.dev/v1/chat/completions"
+    : "https://api.groq.com/openai/v1/chat/completions";
+  const model = useLovable ? "google/gemini-2.5-flash" : "llama-3.3-70b-versatile";
 
   const batch = items.slice(0, 8);
 
@@ -321,11 +322,13 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
     return null;
   }
 
-  // Process sequentially to avoid Groq rate limits
+  // Process sequentially with delay to avoid rate limits
   const processed: any[] = [];
-  for (const item of batch) {
-    const result = await processOne(item);
+  for (let i = 0; i < batch.length; i++) {
+    const result = await processOne(batch[i]);
     if (result) processed.push(result);
+    // Small delay between requests
+    if (i < batch.length - 1) await new Promise(r => setTimeout(r, 500));
   }
   return processed;
 }
@@ -517,7 +520,9 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existing) {
-        const { error } = await supabase.from("ai_suggestions").insert(item);
+        // Strip fields not in the ai_suggestions table
+        const { news_urgency, ...insertData } = item;
+        const { error } = await supabase.from("ai_suggestions").insert(insertData);
         if (error) {
           console.error("Insert error:", error);
         } else {
