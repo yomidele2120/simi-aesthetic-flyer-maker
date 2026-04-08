@@ -520,7 +520,9 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existing) {
-        const { error } = await supabase.from("ai_suggestions").insert(item);
+        // Strip fields not in the ai_suggestions table
+        const { news_urgency, ...insertData } = item;
+        const { error } = await supabase.from("ai_suggestions").insert(insertData);
         if (error) {
           console.error("Insert error:", error);
         } else {
