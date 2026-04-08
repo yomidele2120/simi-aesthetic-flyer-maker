@@ -48,9 +48,12 @@ const Index = () => {
   }, [heroArticles, allArticles, twelveHoursAgo]);
 
 
+  // Collect hero article IDs so we don't repeat them elsewhere
+  const heroIds = useMemo(() => new Set(slideshowArticles.map(a => a.id)), [slideshowArticles]);
+
   const topStoryCandidates = Array.from(new Set([
-    ...allArticles.filter((a) => a.isFeatured),
-    ...allArticles.filter((a) => a.isTrending),
+    ...allArticles.filter((a) => a.isFeatured && !heroIds.has(a.id)),
+    ...allArticles.filter((a) => a.isTrending && !heroIds.has(a.id)),
   ])).slice(0, 8);
 
   const categorySlugs = [
