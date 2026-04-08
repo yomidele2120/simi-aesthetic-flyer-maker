@@ -60,26 +60,41 @@ serve(async (req) => {
     const publishedArticleIds: string[] = [];
 
     for (const suggestion of pending) {
-      // Check for duplicate title in articles
-      const { data: existing } = await supabase
+      const title = suggestion.ai_title || suggestion.original_title;
+      const imageUrl = suggestion.image_url || "";
+      const videoUrl = suggestion.video_url || null;
+
+      if (!imageUrl && !videoUrl) {
+        console.log(`Skipping without media: ${title}`);
+        await supabase.from("ai_suggestions").update({ status: "expired" }).eq("id", suggestion.id);
+        continue;
+      }
+
+      // Check for duplicate title or source in published articles
+      const { data: existingByTitle } = await supabase
         .from("articles")
         .select("id")
-        .eq("title", suggestion.ai_title || suggestion.original_title)
+        .eq("title", title)
         .maybeSingle();
 
-      if (existing) {
+      const { data: existingBySource } = suggestion.source_url
+        ? await supabase
+            .from("articles")
+            .select("id")
+            .eq("source_url", suggestion.source_url)
+            .maybeSingle()
+        : { data: null };
+
+      if (existingByTitle || existingBySource) {
         console.log(`Skipping duplicate: ${suggestion.original_title}`);
         await supabase.from("ai_suggestions").update({ status: "duplicate" }).eq("id", suggestion.id);
         continue;
       }
 
-      const title = suggestion.ai_title || suggestion.original_title;
       const viralHeadline = suggestion.viral_headline || title;
       const content = suggestion.ai_content || suggestion.original_summary || "";
       const summary = suggestion.ai_summary || suggestion.original_summary || "";
       const category = suggestion.category || "Nigeria";
-      const imageUrl = suggestion.image_url || "";
-      const videoUrl = suggestion.video_url || null;
       const tags = suggestion.tags || [];
 
       // Determine urgency flags from confidence

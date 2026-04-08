@@ -6,14 +6,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Nigeria-focused search queries (prioritized)
+// Section-focused search queries so every homepage block stays populated
 const NIGERIA_QUERIES = [
-  "Nigeria news today",
+  "Nigeria breaking news today",
   "Nigerian politics latest",
-  "Nigerian economy business",
+  "Nigeria business economy latest",
   "Nigeria technology startups",
-  "Lagos Abuja news",
-  "Nigerian sports football",
+  "Nigeria health news",
+  "Nigeria sports football latest",
+  "Nigeria entertainment music film news",
   "Africa Nigeria breaking news",
 ];
 
@@ -22,8 +23,13 @@ const GLOBAL_QUERIES = [
   "global economy business",
   "technology news AI",
   "international politics",
+  "health news today",
+  "sports news today",
+  "entertainment news today",
   "world events trending",
 ];
+
+type SectionCategory = "Nigeria" | "World" | "Business & Economy" | "Technology" | "Investigations" | "Opinions" | "Sports" | "Politics" | "Health" | "Entertainment";
 
 interface NewsItem {
   title: string;
@@ -34,6 +40,7 @@ interface NewsItem {
   author?: string;
   publishedAt?: string;
   region: "nigeria" | "global";
+  topicHint?: SectionCategory;
 }
 
 // Serper API
@@ -72,17 +79,22 @@ async function searchSerper(apiKey: string): Promise<NewsItem[]> {
 // Tavily API
 async function searchTavily(apiKey: string): Promise<NewsItem[]> {
   const results: NewsItem[] = [];
-  const queries = ["Nigeria news latest", "breaking world news"];
+  const queries = [
+    { q: "Nigeria news latest", region: "nigeria" as const, topicHint: "Nigeria" as const },
+    { q: "breaking world news", region: "global" as const, topicHint: "World" as const },
+    { q: "health news today", region: "global" as const, topicHint: "Health" as const },
+    { q: "sports news today", region: "global" as const, topicHint: "Sports" as const },
+    { q: "entertainment news today", region: "global" as const, topicHint: "Entertainment" as const },
+  ];
 
-  for (const query of queries) {
+  for (const { q, region, topicHint } of queries) {
     try {
-      const isNigeria = query.includes("Nigeria");
       const resp = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           api_key: apiKey,
-          query,
+          query: q,
           search_depth: "basic",
           max_results: 5,
           topic: "news",
@@ -97,11 +109,12 @@ async function searchTavily(apiKey: string): Promise<NewsItem[]> {
           source: new URL(r.url).hostname,
           url: r.url || "",
           imageUrl: "",
-          region: isNigeria ? "nigeria" : "global",
+          region,
+          topicHint,
         });
       }
     } catch (e) {
-      console.error(`Tavily failed for "${query}":`, e);
+      console.error(`Tavily failed for "${q}":`, e);
     }
   }
   return results;
@@ -111,14 +124,17 @@ async function searchTavily(apiKey: string): Promise<NewsItem[]> {
 async function fetchNewsAPI(apiKey: string): Promise<NewsItem[]> {
   const results: NewsItem[] = [];
   const queries = [
-    { q: "Nigeria", region: "nigeria" as const },
-    { q: "Africa", region: "nigeria" as const },
-    { q: "technology", region: "global" as const },
-    { q: "business", region: "global" as const },
-    { q: "world", region: "global" as const },
+    { q: "Nigeria", region: "nigeria" as const, topicHint: "Nigeria" as const },
+    { q: "Africa politics", region: "nigeria" as const, topicHint: "Politics" as const },
+    { q: "technology", region: "global" as const, topicHint: "Technology" as const },
+    { q: "business", region: "global" as const, topicHint: "Business & Economy" as const },
+    { q: "health", region: "global" as const, topicHint: "Health" as const },
+    { q: "sports", region: "global" as const, topicHint: "Sports" as const },
+    { q: "entertainment", region: "global" as const, topicHint: "Entertainment" as const },
+    { q: "world", region: "global" as const, topicHint: "World" as const },
   ];
 
-  for (const { q, region } of queries) {
+  for (const { q, region, topicHint } of queries) {
     try {
       const resp = await fetch(
         `https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&sortBy=publishedAt&pageSize=5&apiKey=${apiKey}`
@@ -135,6 +151,7 @@ async function fetchNewsAPI(apiKey: string): Promise<NewsItem[]> {
           author: a.author,
           publishedAt: a.publishedAt,
           region,
+          topicHint,
         });
       }
     } catch (e) {
@@ -148,13 +165,16 @@ async function fetchNewsAPI(apiKey: string): Promise<NewsItem[]> {
 async function fetchGNews(apiKey: string): Promise<NewsItem[]> {
   const results: NewsItem[] = [];
   const categories = [
-    { cat: "general", country: "ng", region: "nigeria" as const },
-    { cat: "business", country: "ng", region: "nigeria" as const },
-    { cat: "technology", country: "us", region: "global" as const },
-    { cat: "world", country: "us", region: "global" as const },
+    { cat: "general", country: "ng", region: "nigeria" as const, topicHint: "Nigeria" as const },
+    { cat: "business", country: "ng", region: "nigeria" as const, topicHint: "Business & Economy" as const },
+    { cat: "technology", country: "us", region: "global" as const, topicHint: "Technology" as const },
+    { cat: "health", country: "us", region: "global" as const, topicHint: "Health" as const },
+    { cat: "sports", country: "us", region: "global" as const, topicHint: "Sports" as const },
+    { cat: "entertainment", country: "us", region: "global" as const, topicHint: "Entertainment" as const },
+    { cat: "world", country: "us", region: "global" as const, topicHint: "World" as const },
   ];
 
-  for (const { cat, country, region } of categories) {
+  for (const { cat, country, region, topicHint } of categories) {
     try {
       const resp = await fetch(
         `https://gnews.io/api/v4/top-headlines?category=${cat}&lang=en&country=${country}&max=5&apikey=${apiKey}`
@@ -171,6 +191,7 @@ async function fetchGNews(apiKey: string): Promise<NewsItem[]> {
           author: a.author,
           publishedAt: a.publishedAt,
           region,
+          topicHint,
         });
       }
     } catch (e) {
@@ -204,16 +225,19 @@ async function extractWithFirecrawl(apiKey: string, url: string): Promise<string
   }
 }
 
-// Unsplash image fetching
-async function fetchUnsplashImage(accessKey: string, query: string): Promise<{ url: string; photographerName: string; photographerUrl: string } | null> {
+// Unsplash image fetching with duplicate avoidance
+async function fetchUnsplashImage(accessKey: string, query: string, usedUrls: Set<string>): Promise<{ url: string; photographerName: string; photographerUrl: string } | null> {
   try {
     const resp = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape&content_filter=high`,
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=5&orientation=landscape&content_filter=high`,
       { headers: { Authorization: `Client-ID ${accessKey}` } }
     );
     if (!resp.ok) return null;
     const data = await resp.json();
-    const photo = data.results?.[0];
+    const photo = (data.results || []).find((result: any) => {
+      const candidateUrl = result.urls?.regular || result.urls?.small;
+      return candidateUrl && !usedUrls.has(candidateUrl);
+    }) || data.results?.[0];
     if (!photo) return null;
     return {
       url: photo.urls?.regular || photo.urls?.small,
@@ -238,7 +262,7 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
     : "https://api.groq.com/openai/v1/chat/completions";
   const model = useLovable ? "google/gemini-2.5-flash" : "llama-3.3-70b-versatile";
 
-  const batch = items.slice(0, 8);
+  const batch = selectDiverseBatch(items, 10);
 
   async function processOne(item: NewsItem) {
     try {
@@ -263,7 +287,7 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
                   ai_summary: { type: "string", description: "2-3 sentence professional summary" },
                   ai_content: { type: "string", description: "Full article rewrite in journalistic format, 3-5 paragraphs" },
                   ai_headlines: { type: "array", items: { type: "string" }, description: "3-5 alternative catchy headlines" },
-                  category: { type: "string", enum: ["Nigeria", "World", "Business & Economy", "Technology", "Investigations", "Opinions", "Sports", "Politics"] },
+                  category: { type: "string", enum: ["Nigeria", "World", "Business & Economy", "Technology", "Investigations", "Opinions", "Sports", "Politics", "Health", "Entertainment"] },
                   news_urgency: { type: "string", enum: ["breaking", "trending", "regular"], description: "Classify: 'breaking' = urgent time-sensitive high-impact; 'trending' = gaining attention not urgent; 'regular' = standard news" },
                   confidence: { type: "integer", description: "Confidence score 0-100 for news relevance" },
                   tags: { type: "array", items: { type: "string" }, description: "3-5 relevant tags" },
@@ -278,11 +302,11 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
           messages: [
             {
               role: "system",
-              content: "You are a senior editor at Frontier, a leading Nigerian news platform. Process the following news article.\n\nRULES:\n1. Rewrite in professional journalistic tone (BBC/Reuters style). Remove filler, bias, repetition.\n2. Create TWO headlines: ai_title (standard journalistic) and viral_headline (engaging, high CTR, NOT clickbait).\n3. Classify news_urgency: 'breaking' for urgent/time-sensitive/high-impact events, 'trending' for gaining traction, 'regular' for standard.\n4. For Nigeria-related content, use category 'Nigeria'. For international, use 'World'.\n5. If the source contains video content (YouTube links etc), extract the video_url.\n6. Confidence: 80+ for breaking, 60-79 for trending, 40-59 for regular quality news.",
+              content: "You are a senior editor at Frontier, a leading Nigerian news platform. Process the following news article.\n\nRULES:\n1. Rewrite in professional journalistic tone (BBC/Reuters style). Remove filler, bias, repetition.\n2. Create TWO headlines: ai_title (standard journalistic) and viral_headline (engaging, high CTR, NOT clickbait).\n3. Classify news_urgency: 'breaking' for urgent/time-sensitive/high-impact events, 'trending' for gaining traction, 'regular' for standard.\n4. Use the most accurate category from: Nigeria, World, Business & Economy, Technology, Politics, Health, Sports, Entertainment, Investigations, Opinions.\n5. Prefer the supplied topic hint when it matches the story.\n6. If the source contains video content (YouTube links etc), extract the video_url.\n7. Confidence: 80+ for breaking, 60-79 for trending, 40-59 for regular quality news.",
             },
             {
               role: "user",
-              content: `Title: ${item.title}\nSource: ${item.source}\nRegion hint: ${item.region}\nContent: ${item.description}`,
+              content: `Title: ${item.title}\nSource: ${item.source}\nRegion hint: ${item.region}\nTopic hint: ${item.topicHint || "none"}\nContent: ${item.description}`,
             },
           ],
         }),
@@ -310,6 +334,7 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
           source_url: item.url,
           image_url: item.imageUrl,
           ...args,
+          category: args.category || item.topicHint || (item.region === "nigeria" ? "Nigeria" : "World"),
           confidence,
           ai_headlines: args.ai_headlines || [],
           viral_headline: args.viral_headline || args.ai_title,
@@ -333,15 +358,42 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
   return processed;
 }
 
-// Deduplicate
+// Deduplicate by normalized title or source URL
 function deduplicateItems(items: NewsItem[]): NewsItem[] {
-  const seen = new Set<string>();
+  const seenTitles = new Set<string>();
+  const seenUrls = new Set<string>();
   return items.filter((item) => {
-    const key = item.title.toLowerCase().slice(0, 50);
-    if (seen.has(key)) return false;
-    seen.add(key);
+    const normalizedTitle = item.title.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim().slice(0, 80);
+    const normalizedUrl = item.url.trim().toLowerCase();
+    if ((normalizedUrl && seenUrls.has(normalizedUrl)) || seenTitles.has(normalizedTitle)) return false;
+    if (normalizedUrl) seenUrls.add(normalizedUrl);
+    seenTitles.add(normalizedTitle);
     return true;
   });
+}
+
+function selectDiverseBatch(items: NewsItem[], size: number): NewsItem[] {
+  const picked: NewsItem[] = [];
+  const usedIndices = new Set<number>();
+  const preferredOrder: SectionCategory[] = ["Nigeria", "Politics", "Business & Economy", "Technology", "Health", "Sports", "Entertainment", "World"];
+
+  for (const category of preferredOrder) {
+    const index = items.findIndex((item, i) => item.topicHint === category && !usedIndices.has(i));
+    if (index !== -1) {
+      picked.push(items[index]);
+      usedIndices.add(index);
+      if (picked.length === size) return picked;
+    }
+  }
+
+  items.forEach((item, i) => {
+    if (!usedIndices.has(i) && picked.length < size) {
+      picked.push(item);
+      usedIndices.add(i);
+    }
+  });
+
+  return picked;
 }
 
 serve(async (req) => {
@@ -421,13 +473,14 @@ serve(async (req) => {
 
     // Step 5b: Fetch Unsplash images for items without images
     if (UNSPLASH_ACCESS_KEY) {
+      const usedImageUrls = new Set(processed.map((item) => item.image_url).filter(Boolean));
       for (const item of processed) {
-        if (!item.image_url || item.image_url === "") {
-          const keywords = (item.ai_title || item.original_title).split(" ").slice(0, 4).join(" ");
-          const photo = await fetchUnsplashImage(UNSPLASH_ACCESS_KEY, keywords);
+        if (!item.image_url && !item.video_url) {
+          const keywords = (item.category || item.ai_title || item.original_title).split(" ").slice(0, 4).join(" ");
+          const photo = await fetchUnsplashImage(UNSPLASH_ACCESS_KEY, keywords, usedImageUrls);
           if (photo) {
             item.image_url = photo.url;
-            // Store attribution in tags
+            usedImageUrls.add(photo.url);
             const existingTags = Array.isArray(item.tags) ? item.tags : [];
             item.tags = [...existingTags, `Photo: ${photo.photographerName}`];
           }
