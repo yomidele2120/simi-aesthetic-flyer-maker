@@ -48,12 +48,14 @@ const Index = () => {
   }, [heroArticles, allArticles, twelveHoursAgo]);
 
 
-  // Collect hero article IDs so we don't repeat them elsewhere
-  const heroIds = useMemo(() => new Set(slideshowArticles.map(a => a.id)), [slideshowArticles]);
+  const assignedIds = useMemo(() => {
+    const used = new Set<string>(heroIds);
+    return used;
+  }, [heroIds]);
 
   const topStoryCandidates = Array.from(new Set([
-    ...allArticles.filter((a) => a.isFeatured && !heroIds.has(a.id)),
-    ...allArticles.filter((a) => a.isTrending && !heroIds.has(a.id)),
+    ...allArticles.filter((a) => a.isFeatured && !assignedIds.has(a.id)),
+    ...allArticles.filter((a) => a.isTrending && !assignedIds.has(a.id)),
   ])).slice(0, 8);
 
   const categorySlugs = [
@@ -202,9 +204,15 @@ const Index = () => {
     return () => observer.disconnect();
   }, [hasMoreFeed, loadMore]);
 
-  const breakingArticles = allArticles.filter((a) => a.isBreaking && !heroIds.has(a.id)).slice(0, 5);
+  const topStoryIds = new Set(topStoryCandidates.map((article) => article.id));
+  const reservedIds = new Set([...heroIds, ...topStoryIds]);
+
+  const breakingArticles = allArticles.filter((a) => a.isBreaking && !reservedIds.has(a.id)).slice(0, 5);
+  const breakingIds = new Set(breakingArticles.map((article) => article.id));
+  const feedExcludedIds = new Set([...reservedIds, ...breakingIds]);
+
   const categoryResults = categorySlugs.map((cat) => {
-    const items = allArticles.filter((a) => a.category.toLowerCase().includes(cat.source.toLowerCase()) && !heroIds.has(a.id));
+    const items = allArticles.filter((a) => a.category.toLowerCase().includes(cat.source.toLowerCase()) && !feedExcludedIds.has(a.id));
     return {
       name: cat.name,
       articles: items,
@@ -214,10 +222,10 @@ const Index = () => {
   });
 
   const trendingArticles = mostReadArticles.length > 0
-    ? mostReadArticles.filter(a => !heroIds.has(a.id))
-    : allArticles.filter((a) => a.isTrending && !heroIds.has(a.id)).slice(0, 5);
+    ? mostReadArticles.filter((a) => !feedExcludedIds.has(a.id)).slice(0, 5)
+    : allArticles.filter((a) => a.isTrending && !feedExcludedIds.has(a.id)).slice(0, 5);
 
-  const latestForFeed = feedItems;
+  const latestForFeed = feedItems.filter((article) => !feedExcludedIds.has(article.id));
 
   return (
     <Layout>
@@ -230,7 +238,7 @@ const Index = () => {
             <h2 className="text-2xl font-serif font-bold mb-4">Top Stories</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {topStoryCandidates.slice(0, 4).map((article) => (
-                <ArticleCard key={article.id} article={article} variant="hero" />
+                <ArticleCard key={article.id} article={article} hideImage />
               ))}
             </div>
           </div>
@@ -242,9 +250,9 @@ const Index = () => {
                 <div className="space-y-3">
                   {trendingArticles.map((article, index) => (
                     <Link key={article.id} to={`/article/${article.id}`} className="block p-2 rounded border border-border hover:border-primary transition">
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-sm">{index + 1}. {article.title}</span>
-                        <span className="text-xs text-muted-foreground">{article.readTime}</span>
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="font-semibold text-sm">{index + 1}. {article.viralHeadline || article.title}</span>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">{article.readTime}</span>
                       </div>
                     </Link>
                   ))}
@@ -256,7 +264,7 @@ const Index = () => {
                 <ul className="space-y-2 text-sm">
                   {breakingArticles.map((article) => (
                     <li key={article.id}>
-                      <Link to={`/article/${article.id}`} className="hover:underline">{article.title}</Link>
+                      <Link to={`/article/${article.id}`} className="hover:underline">{article.viralHeadline || article.title}</Link>
                     </li>
                   ))}
                 </ul>
@@ -269,9 +277,9 @@ const Index = () => {
 
       <VideoNewsSection candidateVideos={videoArticles.length > 0 ? videoArticles.slice(0, 5).map((a) => ({
         id: a.id,
-        title: a.title,
+        title: a.viralHeadline || a.title,
         duration: a.readTime,
-        thumbnail: a.imageUrl || "https://images.unsplash.com/photo-1551739670-77d5f89741f3?auto=format&fit=crop&w=1200&q=80",
+        thumbnail: a.imageUrl,
         articleId: a.id,
         source: "internal",
       })) : undefined} />
@@ -287,7 +295,7 @@ const Index = () => {
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {block.featured ? (
-                  <ArticleCard article={block.featured} variant="hero" />
+                  <ArticleCard article={block.featured} hideImage />
                 ) : (
                   <div className="p-4 border border-border rounded text-muted-foreground">No featured story yet.</div>
                 )}

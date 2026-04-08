@@ -6,14 +6,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Nigeria-focused search queries (prioritized)
+// Section-focused search queries so every homepage block stays populated
 const NIGERIA_QUERIES = [
-  "Nigeria news today",
+  "Nigeria breaking news today",
   "Nigerian politics latest",
-  "Nigerian economy business",
+  "Nigeria business economy latest",
   "Nigeria technology startups",
-  "Lagos Abuja news",
-  "Nigerian sports football",
+  "Nigeria health news",
+  "Nigeria sports football latest",
+  "Nigeria entertainment music film news",
   "Africa Nigeria breaking news",
 ];
 
@@ -22,8 +23,13 @@ const GLOBAL_QUERIES = [
   "global economy business",
   "technology news AI",
   "international politics",
+  "health news today",
+  "sports news today",
+  "entertainment news today",
   "world events trending",
 ];
+
+type SectionCategory = "Nigeria" | "World" | "Business & Economy" | "Technology" | "Investigations" | "Opinions" | "Sports" | "Politics" | "Health" | "Entertainment";
 
 interface NewsItem {
   title: string;
@@ -34,6 +40,7 @@ interface NewsItem {
   author?: string;
   publishedAt?: string;
   region: "nigeria" | "global";
+  topicHint?: SectionCategory;
 }
 
 // Serper API
@@ -204,16 +211,19 @@ async function extractWithFirecrawl(apiKey: string, url: string): Promise<string
   }
 }
 
-// Unsplash image fetching
-async function fetchUnsplashImage(accessKey: string, query: string): Promise<{ url: string; photographerName: string; photographerUrl: string } | null> {
+// Unsplash image fetching with duplicate avoidance
+async function fetchUnsplashImage(accessKey: string, query: string, usedUrls: Set<string>): Promise<{ url: string; photographerName: string; photographerUrl: string } | null> {
   try {
     const resp = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape&content_filter=high`,
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=5&orientation=landscape&content_filter=high`,
       { headers: { Authorization: `Client-ID ${accessKey}` } }
     );
     if (!resp.ok) return null;
     const data = await resp.json();
-    const photo = data.results?.[0];
+    const photo = (data.results || []).find((result: any) => {
+      const candidateUrl = result.urls?.regular || result.urls?.small;
+      return candidateUrl && !usedUrls.has(candidateUrl);
+    }) || data.results?.[0];
     if (!photo) return null;
     return {
       url: photo.urls?.regular || photo.urls?.small,
@@ -333,15 +343,42 @@ async function processWithAI(items: NewsItem[], groqKey: string | undefined, lov
   return processed;
 }
 
-// Deduplicate
+// Deduplicate by normalized title or source URL
 function deduplicateItems(items: NewsItem[]): NewsItem[] {
-  const seen = new Set<string>();
+  const seenTitles = new Set<string>();
+  const seenUrls = new Set<string>();
   return items.filter((item) => {
-    const key = item.title.toLowerCase().slice(0, 50);
-    if (seen.has(key)) return false;
-    seen.add(key);
+    const normalizedTitle = item.title.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim().slice(0, 80);
+    const normalizedUrl = item.url.trim().toLowerCase();
+    if ((normalizedUrl && seenUrls.has(normalizedUrl)) || seenTitles.has(normalizedTitle)) return false;
+    if (normalizedUrl) seenUrls.add(normalizedUrl);
+    seenTitles.add(normalizedTitle);
     return true;
   });
+}
+
+function selectDiverseBatch(items: NewsItem[], size: number): NewsItem[] {
+  const picked: NewsItem[] = [];
+  const usedIndices = new Set<number>();
+  const preferredOrder: SectionCategory[] = ["Nigeria", "Politics", "Business & Economy", "Technology", "Health", "Sports", "Entertainment", "World"];
+
+  for (const category of preferredOrder) {
+    const index = items.findIndex((item, i) => item.topicHint === category && !usedIndices.has(i));
+    if (index !== -1) {
+      picked.push(items[index]);
+      usedIndices.add(index);
+      if (picked.length === size) return picked;
+    }
+  }
+
+  items.forEach((item, i) => {
+    if (!usedIndices.has(i) && picked.length < size) {
+      picked.push(item);
+      usedIndices.add(i);
+    }
+  });
+
+  return picked;
 }
 
 serve(async (req) => {
