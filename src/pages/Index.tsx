@@ -47,6 +47,7 @@ const Index = () => {
     return scored.slice(0, 5);
   }, [heroArticles, allArticles, twelveHoursAgo]);
 
+  const heroIds = useMemo(() => new Set(slideshowArticles.map((article) => article.id)), [slideshowArticles]);
 
   const assignedIds = useMemo(() => {
     const used = new Set<string>(heroIds);
