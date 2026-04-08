@@ -34,15 +34,15 @@ serve(async (req) => {
       console.error("Discovery trigger failed (non-fatal):", e);
     }
 
-    // Step 2: Auto-publish pending suggestions with high confidence
-    console.log("Step 2: Auto-publishing high-confidence suggestions...");
+    // Step 2: Auto-publish pending suggestions (confidence 40+ to ensure continuous flow)
+    console.log("Step 2: Auto-publishing pending suggestions...");
     const { data: pending, error: fetchErr } = await supabase
       .from("ai_suggestions")
       .select("*")
       .eq("status", "pending")
-      .gte("confidence", 60)
+      .gte("confidence", 40)
       .order("confidence", { ascending: false })
-      .limit(5);
+      .limit(10);
 
     if (fetchErr) {
       console.error("Fetch pending error:", fetchErr);
