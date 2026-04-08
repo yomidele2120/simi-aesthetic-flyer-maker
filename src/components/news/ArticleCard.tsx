@@ -5,9 +5,10 @@ import { type Article } from "@/lib/mockData";
 type Props = {
   article: Article;
   variant?: "default" | "compact" | "hero";
+  hideImage?: boolean;
 };
 
-const ArticleCard = ({ article, variant = "default" }: Props) => {
+const ArticleCard = ({ article, variant = "default", hideImage = false }: Props) => {
   const renderImage = (className: string) => {
     if (article.imageUrl) {
       return <img src={article.imageUrl} alt={article.title} className={`${className} object-cover`} loading="lazy" />;
@@ -56,13 +57,15 @@ const ArticleCard = ({ article, variant = "default" }: Props) => {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.3 }} className="card-editorial">
       <Link to={`/article/${article.id}`}>
-        <div className="aspect-[16/9] bg-muted mb-3 overflow-hidden">
-          {renderImage("w-full h-full")}
-        </div>
+        {!hideImage && (
+          <div className="aspect-[16/9] bg-muted mb-3 overflow-hidden">
+            {renderImage("w-full h-full")}
+          </div>
+        )}
         {article.isOpinion && <span className="text-xs font-bold uppercase tracking-widest text-accent mb-1 block">Opinion</span>}
         <span className="category-tag mb-1 block">{article.category}</span>
-        <h3 className="text-xl font-serif font-semibold leading-tight headline-hover">{article.title}</h3>
-        <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">{article.summary}</p>
+        <h3 className="text-xl font-serif font-semibold leading-tight headline-hover">{article.viralHeadline || article.title}</h3>
+        {!hideImage && <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">{article.summary}</p>}
         <div className="mt-2 flex items-center gap-2 meta-text">
           <span>{article.author}</span>
           <span>·</span>
